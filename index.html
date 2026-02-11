@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Minerva — Concept Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <img class="logo" src="assets/logo.svg" alt="Minerva School logo"/>
+    <h1>Minerva School</h1>
+    <span class="pilot-tag">Grades 5–7 Math + Design + English Vocabulary</span>
+    <nav>
+      <button class="link" data-route="home" title="Home">Home</button>
+      <button class="link" data-route="lesson" title="Start Lesson">Start Lesson</button>
+      <button class="link" data-route="peers" title="Join Peers">Join Peers</button>
+      <button class="link" data-route="projects" title="Projects">Projects</button>
+      <button class="link" data-route="dashboard" title="Dashboard">Dashboard</button>
+      <button class="link" id="aboutBtn" title="About & Ethics">About</button>
+    </nav>
+  </header>
+
+  <main id="app" role="main" tabindex="-1"></main>
+
+  <footer class="app-footer">
+    <small>Concept prototype for LET — v1 (demo content only · no personal data stored)</small>
+  </footer>
+
+  <div id="aboutPanel" class="about hidden" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <div class="about-inner card">
+      <div class="about-header">
+        <h2 id="aboutTitle">About Minerva · Ethics & Guardrails</h2>
+        <button class="link" id="aboutClose" aria-label="Close">✕</button>
+      </div>
+      <section>
+        <h3>What this is</h3>
+        <p>This is a client-style concept prototype that demonstrates the learner flow and ethics guardrails of Minerva — a decentralized, AI‑guided hybrid model.</p>
+      </section>
+      <section class="grid grid-2">
+        <div>
+          <h3>Data Minimization</h3>
+          <ul>
+            <li>No audio/video/biometrics</li>
+            <li>Demo runs entirely in your browser</li>
+            <li>Interaction data is ephemeral (not saved)</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Explainability</h3>
+          <ul>
+            <li>“Next best actions” show simple reasons</li>
+            <li>Hints and grouping show the rule used</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Human Oversight</h3>
+          <ul>
+            <li>Teacher override toggle for grouping & pacing</li>
+            <li>Manual controls always available</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Equity & Access</h3>
+          <ul>
+            <li>Low-bandwidth UI; offline‑ready roadmap</li>
+            <li>Printable project kits in v2</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
