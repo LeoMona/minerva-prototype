@@ -1,36 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Minerva School — Prototype (Light, Climate Palette)</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minerva School — Where curiosity finds its community</title>
+  <meta name="description" content="Minerva School prototype — a decentralized, learner-centered school model with AI tutors, human mentors, and community projects." />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="app-header">
-    <img class="logo" src="assets/logo.png" alt="Minerva School logo" onerror="this.style.display='none'"/>
-    <div class="brand">
-      <h1>Minerva School</h1>
-      <p class="tagline">Where curiosity finds its community</p>
-    </div>
-    <nav>
-      <button class="link" data-route="home" title="Home">Home</button>
-      <button class="link" data-route="join" title="Join">Join</button>
-      <button class="link" data-route="login" title="Log in">Log in</button>
-      <button class="link" data-route="lesson" title="Lesson">Lesson</button>
-      <button class="link" data-route="peers" title="Peers">Peers</button>
-      <button class="link" data-route="projects" title="Projects">Projects</button>
-      <button class="link" data-route="dashboard" title="Dashboard">Dashboard</button>
-      <button class="link" data-route="about" title="About">About</button>
+  <div class="announcement" role="note">
+    <span>Concept prototype (v2, climate theme) · Demo content only · No personal data stored.</span>
+    <button id="themeToggle" class="btn btn-secondary btn-compact" aria-pressed="false" title="Toggle color theme">
+      <span class="icon">🌗</span><span class="label">Theme</span>
+    </button>
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="#/home" aria-label="Minerva School Home">
+      <img src="assets/logo.svg" alt="Minerva School logo" width="28" height="28"/>
+      <span class="brand-title">Minerva School</span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="#/join" class="nav-link">Join</a>
+      <a href="#/login" class="nav-link">Log in</a>
+      <a href="#/lessons" class="nav-link">Lessons</a>
+      <a href="#/peers" class="nav-link">Peers</a>
+      <a href="#/projects" class="nav-link">Projects</a>
+      <a href="#/dashboard" class="nav-link">Dashboard</a>
+      <a href="#/about" class="nav-link">About</a>
     </nav>
   </header>
 
-  <main id="app" role="main" tabindex="-1"></main>
+  <main id="app" tabindex="-1"></main>
 
-  <footer class="app-footer">
-    <small>Concept prototype (v2, light climate theme). Demo content only; no personal data stored.</small>
+  <footer class="site-footer">
+    <small>© <span id="year"></span> Minerva School · Prototype for research & co-design.</small>
   </footer>
 
   <script src="app.js"></script>
