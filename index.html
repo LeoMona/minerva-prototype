@@ -10,18 +10,17 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="announcement" role="note">
-    <span>Concept prototype (v2, climate theme) · Demo content only · No personal data stored.</span>
-    <button id="themeToggle" class="btn btn-secondary btn-compact" aria-pressed="false" title="Toggle color theme">
-      <span class="icon">🌗</span><span class="label">Theme</span>
-    </button>
-  </div>
 
+  <!-- Header (with Minerva lotus logo) -->
   <header class="site-header">
     <a class="brand" href="#/home" aria-label="Minerva School Home">
-      <img src="assets/logo.svg" alt="Minerva School logo" width="28" height="28"/>
-      <span class="brand-title">Minerva School</span>
+      <img src="assets/logo.png" alt="The Minerva School lotus logo" class="brand-logo" width="32" height="32" />
+      <div class="brand-text">
+        <span class="brand-title">Minerva School</span>
+        <span class="brand-sub">Where curiosity finds its community</span>
+      </div>
     </a>
+
     <nav class="nav" aria-label="Primary">
       <a href="#/join" class="nav-link">Join</a>
       <a href="#/login" class="nav-link">Log in</a>
@@ -30,9 +29,13 @@
       <a href="#/projects" class="nav-link">Projects</a>
       <a href="#/dashboard" class="nav-link">Dashboard</a>
       <a href="#/about" class="nav-link">About</a>
+      <button id="themeToggle" class="btn btn-secondary btn-compact" aria-pressed="false" title="Toggle color theme">
+        <span class="icon">🌗</span><span class="label">Theme</span>
+      </button>
     </nav>
   </header>
 
+  <!-- App shell -->
   <main id="app" tabindex="-1"></main>
 
   <footer class="site-footer">
