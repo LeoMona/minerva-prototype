@@ -1,4 +1,4 @@
-// Minimal hash router
+// Minimal hash-based router + content renderer
 const app = document.getElementById('app');
 const routes = {
   '/home': renderHome,
@@ -16,7 +16,14 @@ function navigate() {
   const view = routes[hash] || renderHome;
   app.innerHTML = '';
   app.appendChild(view());
-  app.focus(); // accessibility
+  app.focus();
+
+  // Update active nav state
+  document.querySelectorAll('.nav-link').forEach(a => {
+    const isActive = a.getAttribute('href').replace('#', '') === hash;
+    a.classList.toggle('active', isActive);
+    a.setAttribute('aria-current', isActive ? 'page' : 'false');
+  });
 }
 
 window.addEventListener('hashchange', navigate);
@@ -24,17 +31,23 @@ window.addEventListener('DOMContentLoaded', () => {
   // Theme
   const saved = localStorage.getItem('minerva-theme');
   if (saved) document.documentElement.setAttribute('data-theme', saved);
-  document.getElementById('themeToggle').addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? '' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('minerva-theme', next);
-  });
+
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? '' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('minerva-theme', next);
+    });
+  }
+
   document.getElementById('year').textContent = new Date().getFullYear();
+  if (!location.hash) location.hash = '/home';
   navigate();
 });
 
-// Helpers
+// Utilities
 function el(tag, attrs = {}, html = '') {
   const node = document.createElement(tag);
   Object.entries(attrs).forEach(([k, v]) => {
@@ -45,7 +58,6 @@ function el(tag, attrs = {}, html = '') {
   node.innerHTML = html;
   return node;
 }
-
 function card(title, bodyHtml) {
   const c = el('section', { class: 'card feature' });
   c.append(el('h3', {}, title));
@@ -58,12 +70,13 @@ function card(title, bodyHtml) {
 // Views
 function renderHome() {
   const container = el('div', { class: 'section' });
+
+  // Hero
   const hero = el('section', { class: 'hero' });
   hero.append(
     el('div', { class: 'panel' }, `
-      <span class="badge">Prototype</span>
       <h1 class="headline">Where curiosity finds its community</h1>
-      <p class="tagline">A decentralized school model that blends AI tutors, human mentors, and peer communities to deliver personalized, project-based learning.</p>
+      <p class="tagline">A decentralized school model blending AI tutors, human mentors, and peer communities for personalized, project-based learning.</p>
       <div class="hero-cta">
         <a href="#/join" class="btn btn-primary">Join beta</a>
         <a href="#/about" class="btn btn-secondary">Learn more</a>
@@ -76,6 +89,7 @@ function renderHome() {
     `)
   );
 
+  // Features
   const features = el('section', { class: 'section' });
   features.append(el('h2', { class: 'title' }, 'Core components'));
   const grid = el('div', { class: 'grid cols-3' });
@@ -89,6 +103,7 @@ function renderHome() {
   );
   features.append(grid);
 
+  // How it works
   const how = el('section', { class: 'section card' });
   how.append(el('h2', { class: 'title' }, 'How it works'));
   const list = el('ol');
@@ -102,15 +117,17 @@ function renderHome() {
   ].forEach(step => list.append(el('li', {}, step)));
   how.append(list);
 
+  // Ethics
   const ethics = el('section', { class: 'section grid cols-2' });
   ethics.append(
     card('Privacy & Safety', '<ul><li>Parental consent & transparency</li><li>Local-first storage where possible</li><li>End-to-end encryption</li><li>Anonymous peer matching</li></ul>'),
     card('Bias & Equity', '<ul><li>Interest-based cohorts</li><li>Regular audits & diverse training data</li><li>Community learning hubs for access</li></ul>')
   );
 
+  // Climate motif
   const leagues = el('section', { class: 'section card' });
   leagues.append(el('h2', { class: 'title' }, 'Climate Leagues (partners)'));
-  leagues.append(el('p', {}, 'We align projects to Oceans · Energy · Water · Land challenges to link learning with climate action.'));
+  leagues.append(el('p', {}, 'We align projects to Oceans · Energy · Water · Land challenges.'));
   const chips = el('div', { class: 'chips' });
   ['Oceans', 'Energy', 'Water', 'Land'].forEach(name => chips.append(el('span', { class: 'chip' }, name)));
   leagues.append(chips);
@@ -150,8 +167,8 @@ function renderJoin() {
   return container;
 }
 
-function renderLogin() { return card('Log in', '<p>This is a demo-only prototype. Authentication is not connected.</p>'); }
-function renderLessons() {
+function renderLogin()     { return card('Log in', '<p>Demo-only — auth not connected.</p>'); }
+function renderLessons()   {
   const container = el('div', { class: 'section' });
   container.append(el('h2', { class: 'title' }, 'Lessons'));
   const table = el('table', { class: 'table' });
@@ -165,16 +182,16 @@ function renderLessons() {
   container.append(el('div', { class: 'card' }, table.outerHTML));
   return container;
 }
-function renderPeers() { return card('Peers', '<p>Interest-aligned groups will appear here.</p>'); }
-function renderProjects() { return card('Projects', '<p>Showcase of purpose-driven projects. Connect to Oceans, Energy, Water, or Land.</p>'); }
+function renderPeers()     { return card('Peers', '<p>Interest-aligned groups will appear here.</p>'); }
+function renderProjects()  { return card('Projects', '<p>Showcase of purpose-driven projects.</p>'); }
 function renderDashboard() { return card('Dashboard', '<p>Progress, reflections, and mentor feedback (mock).</p>'); }
 function renderAbout() {
   const wrap = el('div', { class: 'section grid cols-2' });
   wrap.append(
     card('About Minerva School', `
       <p><strong>Vision:</strong> Education should adapt to learners — not the other way around.</p>
-      <p>Minerva blends decentralized learning, AI personalization, human mentorship, and peer collaboration. It is anchored in self-determination theory, social constructivism, and metacognition research.</p>
-      <p class="muted">Prototype built for design exploration and co-creation.</p>
+      <p>Minerva blends decentralized learning, AI personalization, human mentorship, and peer collaboration.</p>
+      <p class="muted">Prototype for co-design — replace with your final copy anytime.</p>
     `),
     card('Ethics & Governance', '<ul><li>Human-in-the-loop decisions</li><li>Consent & transparency</li><li>Privacy by design</li><li>Independent audits</li></ul>')
   );
