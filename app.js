@@ -1,335 +1,182 @@
-// Minerva light climate prototype — interactive front-end only
+// Minimal hash router
 const app = document.getElementById('app');
-const routes = { home, join, login, onboarding, lesson, prompt, peers, projects, dashboard, about };
-
-window.addEventListener('hashchange', () => navigate(location.hash.replace('#/','')||'home', true));
-
-document.addEventListener('click', (e)=>{
-  const btn = e.target.closest('button.link');
-  if(btn && btn.dataset.route){ navigate(btn.dataset.route); }
-});
-
-const state = {
-  user:null,
-  teacherOverride:false,
-  mastery:{ fractions:0.62, geometry:0.48, vocab:0.55, designThinking:0.77 },
-  peers:[{name:'Maya', strengths:['Geometry','Sketching'], overlap:0.82}, {name:'Vihaan', strengths:['Fractions','Python'], overlap:0.74}],
-  project:{ title:'Build a City Model', due:'2 weeks', status:'In progress' },
-  reflection:[]
+const routes = {
+  '/home': renderHome,
+  '/join': renderJoin,
+  '/login': renderLogin,
+  '/lessons': renderLessons,
+  '/peers': renderPeers,
+  '/projects': renderProjects,
+  '/dashboard': renderDashboard,
+  '/about': renderAbout
 };
 
-function navigate(route, fromHash=false){
-  (routes[route]||routes.home)();
-  if(!fromHash) location.hash = '/'+route;
-  app.focus();
+function navigate() {
+  const hash = location.hash.replace('#', '') || '/home';
+  const view = routes[hash] || renderHome;
+  app.innerHTML = '';
+  app.appendChild(view());
+  app.focus(); // accessibility
 }
 
-function card(inner){return `<section class="card">${inner}</section>`}
+window.addEventListener('hashchange', navigate);
+window.addEventListener('DOMContentLoaded', () => {
+  // Theme
+  const saved = localStorage.getItem('minerva-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? '' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('minerva-theme', next);
+  });
+  document.getElementById('year').textContent = new Date().getFullYear();
+  navigate();
+});
 
-// HOME
-function home(){
-  app.innerHTML = [
-    card(`
-      <div class="hero">
-        <div style="flex:1">
-          <h2 class="section-title">A school without walls</h2>
-          <p class="muted">Personalization + metacognition + community — with transparent human oversight.</p>
-          <div class="grid grid-3" style="margin-top:1rem">
-            <button class="btn" onclick="navigate('join')">Join now</button>
-            <button class="btn secondary" onclick="navigate('login')">Log in</button>
-            <button class="btn ghost" onclick="navigate('about')">About & Ethics</button>
-          </div>
-        </div>
-      </div>`),
-    card(`
-      <h3 class="section-title">How it works</h3>
-      <ol>
-        <li>Student logs in → <em>AI assesses profile</em></li>
-        <li>Personalized learning path created</li>
-        <li>Metacognition tracking</li>
-        <li>Peer matching</li>
-        <li>Project‑based collaboration</li>
-        <li>Continuous adaptation</li>
-      </ol>
+// Helpers
+function el(tag, attrs = {}, html = '') {
+  const node = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => {
+    if (k === 'class') node.className = v;
+    else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+    else node.setAttribute(k, v);
+  });
+  node.innerHTML = html;
+  return node;
+}
+
+function card(title, bodyHtml) {
+  const c = el('section', { class: 'card feature' });
+  c.append(el('h3', {}, title));
+  const body = el('div', {});
+  body.innerHTML = bodyHtml;
+  c.append(body);
+  return c;
+}
+
+// Views
+function renderHome() {
+  const container = el('div', { class: 'section' });
+  const hero = el('section', { class: 'hero' });
+  hero.append(
+    el('div', { class: 'panel' }, `
+      <span class="badge">Prototype</span>
+      <h1 class="headline">Where curiosity finds its community</h1>
+      <p class="tagline">A decentralized school model that blends AI tutors, human mentors, and peer communities to deliver personalized, project-based learning.</p>
+      <div class="hero-cta">
+        <a href="#/join" class="btn btn-primary">Join beta</a>
+        <a href="#/about" class="btn btn-secondary">Learn more</a>
+      </div>
+      <div class="kpis" aria-label="Highlights">
+        <div class="kpi"><div class="value">Adaptive</div><div>Personalized pathways</div></div>
+        <div class="kpi"><div class="value">Wellbeing</div><div>Metacognition & self-regulation</div></div>
+        <div class="kpi"><div class="value">Community</div><div>Peers & mentors</div></div>
+      </div>
     `)
-  ].join('');
+  );
+
+  const features = el('section', { class: 'section' });
+  features.append(el('h2', { class: 'title' }, 'Core components'));
+  const grid = el('div', { class: 'grid cols-3' });
+  grid.append(
+    card('Decentralized learning', 'Home + community hubs replace the one-size-fits-all classroom.'),
+    card('AI tutor', 'Conversational, adaptive guidance that maps talents & interests.'),
+    card('Human mentors', 'Design, mentoring, and governance remain central.'),
+    card('Peer groups', 'Interest-aligned, evolving cohorts for collaboration.'),
+    card('Metacognition tracking', 'Progress journals, reflection prompts, and wellbeing signals.'),
+    card('Projects', 'Purpose-driven work tied to local impact & global challenges.')
+  );
+  features.append(grid);
+
+  const how = el('section', { class: 'section card' });
+  how.append(el('h2', { class: 'title' }, 'How it works'));
+  const list = el('ol');
+  [
+    'Student logs in → AI assesses profile',
+    'Personalized learning path created',
+    'Metacognition & wellbeing tracking',
+    'Peer matching (interest-first)',
+    'Project-based collaboration',
+    'Continuous adaptation with human oversight'
+  ].forEach(step => list.append(el('li', {}, step)));
+  how.append(list);
+
+  const ethics = el('section', { class: 'section grid cols-2' });
+  ethics.append(
+    card('Privacy & Safety', '<ul><li>Parental consent & transparency</li><li>Local-first storage where possible</li><li>End-to-end encryption</li><li>Anonymous peer matching</li></ul>'),
+    card('Bias & Equity', '<ul><li>Interest-based cohorts</li><li>Regular audits & diverse training data</li><li>Community learning hubs for access</li></ul>')
+  );
+
+  const leagues = el('section', { class: 'section card' });
+  leagues.append(el('h2', { class: 'title' }, 'Climate Leagues (partners)'));
+  leagues.append(el('p', {}, 'We align projects to Oceans · Energy · Water · Land challenges to link learning with climate action.'));
+  const chips = el('div', { class: 'chips' });
+  ['Oceans', 'Energy', 'Water', 'Land'].forEach(name => chips.append(el('span', { class: 'chip' }, name)));
+  leagues.append(chips);
+
+  container.append(hero, features, how, ethics, leagues);
+  return container;
 }
 
-// AUTH — JOIN
-function join(){
-  app.innerHTML = card(`
-    <h3 class="section-title">Create your account</h3>
-    <div class="grid grid-2">
-      <div>
-        <label class="label">Full name</label>
-        <input class="input" id="name" placeholder="e.g., Aarav Sharma"/>
-        <label class="label">Email</label>
-        <input class="input" id="email" placeholder="name@example.com"/>
-        <label class="label">Role</label>
-        <select id="role" class="input"><option>Student</option><option>Parent</option><option>Teacher</option></select>
-        <div style="margin-top:1rem"><button class="btn" onclick="startOnboarding()">Create account →</button></div>
-      </div>
-      <div>
-        <p class="muted">By continuing you agree to minimal data use: only interaction data (time‑on‑task, hint usage) and brief self‑reports for metacognition. No audio/video/biometrics.</p>
-      </div>
-    </div>
-  `);
-}
-
-// AUTH — LOGIN
-function login(){
-  app.innerHTML = card(`
-    <h3 class="section-title">Log in</h3>
-    <div class="grid grid-2">
-      <div>
-        <label class="label">Email</label>
-        <input class="input" id="lemail" placeholder="name@example.com"/>
-        <label class="label">Password</label>
-        <input class="input" id="lpw" type="password"/>
-        <div style="margin-top:1rem"><button class="btn" onclick="startOnboarding(true)">Log in →</button></div>
-      </div>
-      <div>
-        <p class="muted">Forgot your password? In this prototype, credentials are not stored. Click Log in to simulate access.</p>
-      </div>
-    </div>
-  `);
-}
-
-function startOnboarding(isLogin=false){
-  const name = document.getElementById(isLogin? 'lemail':'name')?.value || 'Learner';
-  state.user = { name };
-  navigate('onboarding');
-}
-
-// ONBOARDING — AI assessment → path
-function onboarding(){
-  app.innerHTML = card(`
-    <h3 class="section-title">Setting up your learning space</h3>
-    <p class="muted"><span class="spinner"></span> AI is assessing your profile and goals…</p>
-    <ul>
-      <li>Prior knowledge check (quick interactive)</li>
-      <li>Interests & goals (short survey)</li>
-      <li>Metacognition baseline (confidence & strategy prompts)</li>
-    </ul>
-    <div style="margin-top:1rem"><button class="btn" onclick="finishOnboarding()">Continue → Personalized Path</button></div>
-  `);
-}
-
-function finishOnboarding(){
-  app.innerHTML = [
-    card(`<h3 class="section-title">Welcome, ${state.user?.name||'Learner'}!</h3><p>Your personalized path is ready.</p>`),
-    card(`
-      <div class="grid grid-3">
-        <div class="badge">Next: Adaptive Lesson</div>
-        <div class="badge">Join a Peer Group</div>
-        <div class="badge">Pick a Project</div>
-      </div>
-      <div style="margin-top:1rem"><button class="btn" onclick="navigate('dashboard')">Go to Dashboard →</button></div>
-    `)
-  ].join('');
-}
-
-// LESSON
-function lesson(){
-  state.lastCorrect=null; state.usedHint=false;
-  app.innerHTML = card(`
-    <h3 class="section-title">Adaptive Lesson — Fractions</h3>
-    <p class="muted">Q1 of 2 · 10–12 minutes</p>
-    <div class="card">
-      <p><strong>Q1:</strong> A recipe uses <em>3/4</em> cup of sugar. You want to make half the recipe. How much sugar do you need?</p>
-      <div class="grid grid-3" style="margin:.5rem 0 1rem">
-        <button class="btn" onclick="selectAnswer(this,false)">1/4 cup</button>
-        <button class="btn" onclick="selectAnswer(this,true)">3/8 cup</button>
-        <button class="btn" onclick="selectAnswer(this,false)">1/2 cup</button>
-      </div>
-      <button class="btn secondary" onclick="showHint()">Show hint</button>
-      <div id="hint" class="muted" style="margin-top:.8rem"></div>
-    </div>
-    <div style="margin-top:.8rem">
-      <button class="btn" onclick="lesson2()">Next →</button>
-      <button class="btn ghost" onclick="navigate('home')">Back</button>
-    </div>
-  `);
-}
-function selectAnswer(btn, ok){ document.querySelectorAll('.card .btn').forEach(b=>b.style.outline='none'); btn.style.outline='2px solid var(--brand)'; state.lastCorrect=!!ok; }
-function showHint(){ state.usedHint=true; document.getElementById('hint').innerHTML = 'Hint: Half of 3/4 is (3/4) × (1/2) = 3/8.' }
-
-function lesson2(){
-  const struggled = (state.lastCorrect===false) || state.usedHint===true;
-  if(struggled){
-    app.innerHTML = card(`
-      <h3 class="section-title">Adaptive Lesson — Scaffolded Path</h3>
-      <p class="muted">We’ll use a number line to visualize halves of fractions.</p>
-      <div class="card">
-        <p><strong>Q2 (Scaffolded):</strong> Mark <em>1/2 of 2/3</em> on the number line.</p>
-        <p class="muted">Why this? You used a hint or missed Q1 → reinforcing the concept visually.</p>
-        <button class="btn" onclick="navigate('prompt')">Got it → Reflection</button>
-      </div>
-    `);
-  } else {
-    app.innerHTML = card(`
-      <h3 class="section-title">Adaptive Lesson — Challenge Path</h3>
-      <p class="muted">Great! Let’s step up the challenge.</p>
-      <div class="card">
-        <p><strong>Q2 (Challenge):</strong> A smoothie uses <em>1 1/2</em> cups of yogurt. For <em>2/3</em> of the recipe, how much yogurt?</p>
-        <div class="grid grid-3" style="margin:.5rem 0 1rem">
-          <button class="btn">1 cup</button>
-          <button class="btn">1 cup + 0.0̅ (Trick!)</button>
-          <button class="btn">1 cup</button>
+function renderJoin() {
+  const container = el('div', { class: 'section grid cols-2' });
+  container.append(
+    card('Join Minerva (beta)', `
+      <form id="joinForm">
+        <label class="label" for="name">Full name</label>
+        <input class="input" id="name" name="name" required placeholder="e.g., Asha Kumar"/>
+        <label class="label" for="role" style="margin-top:.75rem">Role</label>
+        <select class="input" id="role" name="role">
+          <option>Learner</option>
+          <option>Parent/Guardian</option>
+          <option>Mentor</option>
+          <option>Teacher</option>
+        </select>
+        <label class="label" for="email" style="margin-top:.75rem">Email</label>
+        <input class="input" id="email" type="email" name="email" placeholder="name@example.com"/>
+        <div style="margin-top:1rem; display:flex; gap:.5rem;">
+          <button type="submit" class="btn btn-primary">Request invite</button>
+          <a href="#/about" class="btn btn-secondary">Learn more</a>
         </div>
-        <p class="muted">Why this? Correct on Q1 with no hint → we’re testing mixed numbers scaling.</p>
-        <button class="btn" onclick="navigate('prompt')">Next → Reflection</button>
-      </div>
-    `);
-  }
-}
-
-// REFLECTION
-function prompt(){
-  app.innerHTML = card(`
-    <h3 class="section-title">Quick Reflection</h3>
-    <p class="muted">How confident do you feel about similar problems?</p>
-    <div class="grid grid-3" style="margin:.5rem 0 1rem">
-      <button class="btn" onclick="saveReflection('low')">😟 Low</button>
-      <button class="btn" onclick="saveReflection('medium')">😐 Medium</button>
-      <button class="btn" onclick="saveReflection('high')">😄 High</button>
-    </div>
-    <p class="muted">Your response personalizes the next hint or challenge.</p>
-    <div style="margin-top:.8rem">
-      <button class="btn" onclick="navigate('peers')">Next → Join Peers</button>
-    </div>
-  `);
-}
-function saveReflection(level){ state.reflection.push({ts:Date.now(), level}); alert('Saved: '+level+' confidence'); }
-
-// PEERS
-function peers(){
-  const cards = state.peers.map(p=>`
-    <div class="card">
-      <h4>${p.name}</h4>
-      <p class="muted">Strengths: ${p.strengths.join(', ')}</p>
-      <div class="badge">Match: ${(p.overlap*100).toFixed(0)}%</div>
-      <div style="margin-top:.6rem">${state.teacherOverride
-        ? '<button class="btn" onclick="alert('Assigned by teacher override')">Assign directly</button>'
-        : '<button class="btn">Request to join</button>'}
-      </div>
-      <p class="muted" style="margin-top:.5rem">Why this match? Complementary skills + schedule fit.</p>
-    </div>`).join('');
-
-  app.innerHTML = [
-    card(`
-      <h3 class="section-title">Peer Matching</h3>
-      <div class="badge">Teacher Override:
-        <label class="switch" style="vertical-align:middle; margin-left:.5rem">
-          <input type="checkbox" ${state.teacherOverride?'checked':''} onchange="toggleOverride(this)">
-          <span class="slider" aria-hidden="true"></span>
-          <span class="sr-only">Toggle teacher override</span>
-        </label>
-      </div>
-      <p class="muted">Educators can override AI suggestions for grouping and pacing at any time.</p>
+      </form>
     `),
-    `<div class="grid grid-2">${cards}</div>`,
-    `<div style="margin-top:1rem"><button class="btn" onclick="navigate('projects')">Next → Project Hub</button></div>`
-  ].join('');
-}
-function toggleOverride(cb){ state.teacherOverride = cb.checked; peers(); }
-
-// PROJECTS
-function projects(){
-  app.innerHTML = card(`
-    <h3 class="section-title">Project Hub</h3>
-    <div class="card">
-      <h4>🏗️ ${state.project.title}</h4>
-      <p class="muted">Integrates Math (ratios) · Design (scale models) · English (urban‑planning vocabulary).</p>
-      <div class="grid grid-3" style="margin:.6rem 0">
-        <button class="btn">Start</button>
-        <button class="btn secondary">Resources</button>
-        <button class="btn ghost">Submit</button>
-      </div>
-    </div>
-    <div style="margin-top:.8rem"><button class="btn" onclick="navigate('dashboard')">Next → Dashboard</button></div>
-  `);
+    card('Why join?', '<ul><li>Personalized pathways</li><li>Mentor & peer support</li><li>Project-based, purpose-driven learning</li></ul>')
+  );
+  container.querySelector('#joinForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Thanks! This is a prototype — your request is recorded locally only.');
+  });
+  return container;
 }
 
-// DASHBOARD
-function dashboard(){
-  const m = state.mastery; const userName = state.user?.name || 'Learner';
-  app.innerHTML = [
-    card(`<h3 class="section-title">Dashboard — Welcome, ${userName}</h3><p class="muted">Your journey at a glance.</p>`),
-    card(`
-      <h4>Onboarding checklist</h4>
-      <ol>
-        <li>✔ Log in (done)</li>
-        <li>✔ AI profile assessed</li>
-        <li>◻ Metacognition baseline set</li>
-        <li>◻ Join peer group</li>
-        <li>◻ Start project</li>
-        <li>◻ Weekly reflection</li>
-      </ol>
+function renderLogin() { return card('Log in', '<p>This is a demo-only prototype. Authentication is not connected.</p>'); }
+function renderLessons() {
+  const container = el('div', { class: 'section' });
+  container.append(el('h2', { class: 'title' }, 'Lessons'));
+  const table = el('table', { class: 'table' });
+  table.innerHTML = `
+    <thead><tr><th>Module</th><th>Focus</th><th>Mode</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>Foundations of Climate</td><td>Systems thinking</td><td>Self-paced</td><td><button class="btn btn-secondary btn-compact">Open</button></td></tr>
+      <tr><td>Metacognition 101</td><td>Learning how to learn</td><td>Guided</td><td><button class="btn btn-secondary btn-compact">Open</button></td></tr>
+      <tr><td>Community Project</td><td>Local impact</td><td>Collaborative</td><td><button class="btn btn-secondary btn-compact">Open</button></td></tr>
+    </tbody>`;
+  container.append(el('div', { class: 'card' }, table.outerHTML));
+  return container;
+}
+function renderPeers() { return card('Peers', '<p>Interest-aligned groups will appear here.</p>'); }
+function renderProjects() { return card('Projects', '<p>Showcase of purpose-driven projects. Connect to Oceans, Energy, Water, or Land.</p>'); }
+function renderDashboard() { return card('Dashboard', '<p>Progress, reflections, and mentor feedback (mock).</p>'); }
+function renderAbout() {
+  const wrap = el('div', { class: 'section grid cols-2' });
+  wrap.append(
+    card('About Minerva School', `
+      <p><strong>Vision:</strong> Education should adapt to learners — not the other way around.</p>
+      <p>Minerva blends decentralized learning, AI personalization, human mentorship, and peer collaboration. It is anchored in self-determination theory, social constructivism, and metacognition research.</p>
+      <p class="muted">Prototype built for design exploration and co-creation.</p>
     `),
-    card(`
-      <h4>Mastery & momentum</h4>
-      <div class="grid grid-3">
-        <div class="badge"><strong>Fractions:</strong> ${Math.round(m.fractions*100)}%</div>
-        <div class="badge"><strong>Geometry:</strong> ${Math.round(m.geometry*100)}%</div>
-        <div class="badge"><strong>Design Thinking:</strong> ${Math.round(m.designThinking*100)}%</div>
-      </div>
-      <div class="grid grid-2" style="margin-top:.6rem">
-        <div>
-          <h4>Next Best Actions</h4>
-          <ul>
-            <li>Visual fractions task (you used diagrams successfully)</li>
-            <li>15‑min coach check‑in</li>
-            <li>Join City Model planning on Thu</li>
-          </ul>
-        </div>
-        <div>
-          <h4>Why these suggestions?</h4>
-          <p class="muted">Based on hint use, time‑on‑task, and reflection confidence.</p>
-        </div>
-      </div>
-    `)
-  ].join('');
+    card('Ethics & Governance', '<ul><li>Human-in-the-loop decisions</li><li>Consent & transparency</li><li>Privacy by design</li><li>Independent audits</li></ul>')
+  );
+  return wrap;
 }
-
-// ABOUT — ethics and School of Humanity inspirations
-function about(){
-  app.innerHTML = card(`
-    <h3 class="section-title">About Minerva — Ethics & Model</h3>
-    <div class="grid grid-2">
-      <div>
-        <h4>Data minimization</h4>
-        <ul>
-          <li>No audio/video/biometrics in v1</li>
-          <li>Demo runs entirely in your browser</li>
-          <li>Interaction data is ephemeral</li>
-        </ul>
-      </div>
-      <div>
-        <h4>Explainability</h4>
-        <ul>
-          <li>Recommendations show simple rules</li>
-          <li>“Why this?” panel on Dashboard</li>
-        </ul>
-      </div>
-      <div>
-        <h4>Human oversight</h4>
-        <ul>
-          <li>Teacher override for grouping & pacing</li>
-          <li>Parents access weekly summaries</li>
-        </ul>
-      </div>
-      <div>
-        <h4>Inspired by mastery & real‑world challenges</h4>
-        <ul>
-          <li>Challenge‑based learning and portfolios</li>
-          <li>Mastery progression (advance on evidence)</li>
-        </ul>
-      </div>
-    </div>
-    <p class="muted" style="margin-top:.5rem">This prototype mirrors your presentation and uses a climate‑inspired light palette.</p>
-  `);
-}
-
-// init
-navigate((location.hash.replace('#/',''))||'home', true);
