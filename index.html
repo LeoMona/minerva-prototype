@@ -4,24 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Minerva School — Where curiosity finds its community</title>
-  <meta name="description" content="Minerva School — Where curiosity finds its community. Personalized pathways, mentors, and project-based learning." />
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="preload" href="assets/logo.svg" as="image" />
-  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Data first, then app logic. Both loaded with defer so DOM is ready. -->
+  <script defer src="js/data.js"></script>
+  <script defer src="js/app.js"></script>
 </head>
 <body>
   <header>
     <nav class="nav" aria-label="Primary">
-      <a class="brand" href="#join" data-link>
-        <img class="logo" src="assets/logo.svg" alt="Minerva School logo" />
+      <a class="brand" href="#join" data-link aria-label="Home">
+        <img class="logo" src="assets/logo.png" alt="Minerva School logo" />
         <div class="brand-text">
-          <div class="brand-name">Minerva School</div>
-          <div class="brand-tagline">Where curiosity finds its community</div>
+          <strong>Minerva School</strong>
+          <small>Where curiosity finds its community</small>
         </div>
         <span class="tag">Prototype</span>
       </a>
 
-      <!-- ✅ Proper, working nav links -->
+      <!-- Clean, valid nav links (fixes the #joinJoin text bug) -->
       <a href="#join" data-link>Join</a>
       <a href="#login" data-link>Log in</a>
       <a href="#lessons" data-link>Lessons</a>
@@ -30,6 +33,7 @@
       <a href="#dashboard" data-link>Dashboard</a>
 
       <span class="spacer"></span>
+      <button id="resetBtn" class="btn ghost" title="Clear app data & reload">Reset</button>
       <button id="logoutBtn" class="btn ghost hidden">Log out</button>
     </nav>
   </header>
@@ -86,7 +90,7 @@
             <li>Mentor and peer support with guardrails</li>
             <li>Project‑based, purpose‑driven learning</li>
           </ul>
-          <div class="pills">
+          <div class="chips">
             <span class="pill">Safe‑by‑design</span>
             <span class="pill">Evidence‑informed</span>
             <span class="pill">Community</span>
@@ -106,8 +110,10 @@
             <input id="loginEmail" type="email" required placeholder="name@example.com" />
             <label for="loginPw">Password</label>
             <input id="loginPw" type="password" required />
-            <div class="between">
-              <label class="inline"><input type="checkbox" id="showPw"/> Show password</label>
+            <div class="split">
+              <label class="inline">
+                <input type="checkbox" id="showPw" /> Show password
+              </label>
               <button type="button" class="btn ghost" id="forgotBtn">Forgot password?</button>
             </div>
             <div class="actions">
@@ -116,6 +122,7 @@
             </div>
           </form>
         </div>
+
         <div class="card">
           <h2>New to Minerva?</h2>
           <p>Build your learning passport and join purpose‑driven projects.</p>
@@ -128,7 +135,7 @@
     <section id="lessons" class="abstract-bg hidden" data-route>
       <div class="card">
         <h1>Lessons</h1>
-        <div class="fields two header-controls">
+        <div class="fields two top-gap">
           <div>
             <label for="gradeSelect">Grade</label>
             <select id="gradeSelect"></select>
@@ -147,6 +154,7 @@
             </div>
           </div>
         </div>
+
         <div class="card table-wrap">
           <table class="table" aria-describedby="lessonsHelp">
             <thead>
@@ -192,7 +200,7 @@
           <div class="panel">
             <div class="messages" id="chatMessages" aria-live="polite"></div>
             <div class="composer">
-              <input id="chatInput" placeholder="Write a message to your peer…"/>
+              <input id="chatInput" placeholder="Write a message to your peer…" />
               <button class="btn primary" id="sendMsg">Send</button>
             </div>
           </div>
@@ -210,13 +218,12 @@
             <label for="projTheme">Theme</label>
             <select id="projTheme">
               <option value="All">All</option>
-              <option value="SDG 3">SDG 3 · Good Health</option>
-              <option value="SDG 4">SDG 4 · Quality Education</option>
-              <option value="SDG 11">SDG 11 · Sustainable Cities</option>
-              <option value="SDG 13">SDG 13 · Climate Action</option>
-              <option value="Community">Community</option>
-              <option value="STEM">STEM</option>
-              <option value="Arts & Culture">Arts & Culture</option>
+              <option value="Health">Health</option>
+              <option value="Education">Education</option>
+              <option value="Sustainability">Sustainability</option>
+              <option value="Civic">Civic & Community</option>
+              <option value="Technology">Technology</option>
+              <option value="Arts">Arts & Culture</option>
             </select>
           </div>
           <div>
@@ -251,17 +258,19 @@
             </div>
           </div>
         </div>
+
         <div class="card">
           <h2>Reflections</h2>
           <div id="reflections"></div>
           <div class="fields">
             <textarea id="reflectInput" rows="3" placeholder="What did you learn today? What will you try next time?"></textarea>
-            <div class="end">
+            <div class="right">
               <button class="btn" id="clearReflections">Clear</button>
               <button class="btn primary" id="addReflection">Add entry</button>
             </div>
           </div>
         </div>
+
         <div class="card">
           <h2>Mentor feedback</h2>
           <div id="feedback"></div>
@@ -270,22 +279,19 @@
     </section>
   </main>
 
-  <div class="footer">© 2026 Minerva School · Prototype for research &amp; co‑design.</div>
+  <div class="footer">© 2026 Minerva School · Prototype for research & co‑design.</div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <!-- Modal -->
   <dialog id="modal" class="modal">
-    <div class="card modal-card">
+    <div class="card no-border">
       <div class="modal-head">
         <h3 id="modalTitle">Preview</h3>
         <form method="dialog"><button class="btn">Close</button></form>
       </div>
-      <div id="modalBody" class="modal-body"></div>
-      <div id="modalActions" class="modal-actions end"></div>
+      <div id="modalBody"></div>
+      <div class="right" id="modalActions"></div>
     </div>
   </dialog>
-
-  <noscript><div class="toast show">This site needs JavaScript enabled.</div></noscript>
-  <script src="app.js" defer></script>
 </body>
 </html>
