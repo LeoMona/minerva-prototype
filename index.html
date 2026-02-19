@@ -136,3 +136,145 @@
         <h1>Lessons</h1>
         <div class="fields two gutter">
           <div>
+            <label for="gradeSelect">Grade</label>
+            <select id="gradeSelect"></select>
+          </div>
+          <div>
+            <label>Subjects</label>
+            <div class="chip-row" id="subjectFilters">
+              <!-- created by JS using LESSON_SUBJECTS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="card table-wrap">
+          <table class="table" aria-describedby="lessonsHelp">
+            <thead>
+              <tr>
+                <th>Lesson</th><th>Subject</th><th>Mode</th><th>Grade band</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="lessonsBody"></tbody>
+          </table>
+        </div>
+        <small id="lessonsHelp" class="muted">Tip: filter by Grade and Subjects. Click <span class="kbd">Open</span> to preview.</small>
+      </div>
+    </section>
+
+    <!-- PEERS -->
+    <section id="peers" class="abstract-bg hidden" data-route>
+      <div class="card">
+        <h1>Peers</h1>
+        <p class="muted">Find classmates and mentors for collaborative learning.</p>
+
+        <div class="fields two">
+          <div>
+            <label>Interests</label>
+            <div class="chip-row" id="interestFilters"></div>
+          </div>
+          <div>
+            <label for="roleFilter">Role</label>
+            <select id="roleFilter">
+              <option value="All">All</option>
+              <option>Learner</option>
+              <option>Teacher</option>
+              <option>Mentor</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="chat">
+          <div class="list" id="peerList"></div>
+          <div class="panel">
+            <div class="messages" id="chatMessages" aria-live="polite"></div>
+            <div class="composer">
+              <input id="chatInput" placeholder="Write a message to your peer…" />
+              <button class="btn primary" id="sendMsg">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="abstract-bg hidden" data-route>
+      <div class="card">
+        <h1>Projects</h1>
+        <p class="muted">Showcase of purpose‑driven projects (curated + community).</p>
+
+        <div class="fields two">
+          <div>
+            <label for="projTheme">Theme</label>
+            <select id="projTheme"></select>
+          </div>
+          <div>
+            <label for="projGrade">Grade band</label>
+            <select id="projGrade">
+              <option value="All">All</option>
+              <option value="K-2">K–2</option>
+              <option value="3-5">3–5</option>
+              <option value="6-8">6–8</option>
+              <option value="9-12">9–12</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid" id="projectGrid"></div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="abstract-bg hidden" data-route>
+      <div class="row">
+        <div class="card">
+          <h1>Dashboard</h1>
+          <p class="muted">Progress, reflections, and mentor feedback</p>
+          <div class="fields two">
+            <div>
+              <h3>Learning progress</h3>
+              <div class="stack" id="progressList"></div>
+            </div>
+            <div>
+              <h3>Upcoming</h3>
+              <ul id="upcomingList"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Reflections</h2>
+          <div id="reflections"></div>
+          <div class="fields">
+            <textarea id="reflectInput" rows="3" placeholder="What did you learn today? What will you try next time?"></textarea>
+            <div class="right">
+              <button class="btn" id="clearReflections">Clear</button>
+              <button class="btn primary" id="addReflection">Add entry</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Mentor feedback</h2>
+          <div id="feedback"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">© 2026 Minerva School · Prototype for research &amp; co‑design.</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Modal -->
+  <dialog id="modal" class="modal">
+    <div class="card plain">
+      <div class="between">
+        <h3 id="modalTitle">Preview</h3>
+        <form method="dialog"><button class="btn">Close</button></form>
+      </div>
+      <div id="modalBody"></div>
+      <div class="right" id="modalActions"></div>
+    </div>
+  </dialog>
+</body>
+</html>
+``
