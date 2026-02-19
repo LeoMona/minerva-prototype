@@ -1,3 +1,55 @@
+/* ========= Data ========= */
+const GRADES = ["K","1","2","3","4","5","6","7","8","9","10","11","12"];
+
+const LESSONS = [
+  { id:"l1", title:"Foundations of Climate", subject:"Science", mode:"Self‑paced", grades:[6,7,8,9], band:"6-9" },
+  { id:"l2", title:"Metacognition 101", subject:"Life Skills", mode:"Guided", grades:[5,6,7,8,9,10], band:"5-10" },
+  { id:"l3", title:"Community Project", subject:"Social Studies", mode:"Collaborative", grades:[7,8,9,10,11,12], band:"7-12" },
+  { id:"l4", title:"Fractions with Minecraft", subject:"Math", mode:"Guided", grades:[3,4,5], band:"3-5" },
+  { id:"l5", title:"Narrative Writing", subject:"English", mode:"Self‑paced", grades:[6,7], band:"6-7" },
+  { id:"l6", title:"Scratch: Arcade Games", subject:"Computer Science", mode:"Self‑paced", grades:[4,5,6], band:"4-6" },
+  { id:"l7", title:"Watercolor Basics", subject:"Arts", mode:"Studio", grades:[6,7,8], band:"6-8" },
+  { id:"l8", title:"Fitness Circuits", subject:"PE", mode:"Coach‑led", grades:[9,10,11,12], band:"9-12" },
+];
+
+const PEERS = [
+  { id:"p1", name:"A. Singh", role:"Learner", interests:["Robotics","Climate"], grade:8 },
+  { id:"p2", name:"R. Das", role:"Learner", interests:["Art","Debate"], grade:9 },
+  { id:"p3", name:"Mentor Dev", role:"Mentor", interests:["Robotics","SDG 13"], grade:null },
+  { id:"p4", name:"Ms. Gupta", role:"Teacher", interests:["Debate","Climate"], grade:null },
+  { id:"p5", name:"K. Rao", role:"Learner", interests:["Sports","Climate"], grade:6 },
+];
+
+const PROJECTS = [
+  { id:"pr1", title:"Clean Air Monitor", theme:"STEM", band:"6-8", blurb:"Prototype low‑cost air‑quality sensors and map hotspots around school.", skills:["Design","Data","IoT"] },
+  { id:"pr2", title:"Wellness Ambassadors", theme:"Wellbeing", band:"9-12", blurb:"Peer‑led campaign to improve sleep, movement, and nutrition.", skills:["Leadership","Communication"] },
+  { id:"pr3", title:"Local Heritage Oral History", theme:"Arts & Culture", band:"6-8", blurb:"Interview elders, digitize photographs, and produce a mini‑documentary.", skills:["Research","Media","Curation"] },
+  { id:"pr4", title:"Math Trails Around Campus", theme:"STEM", band:"3-5", blurb:"Design outdoor math tasks—area, angles, ratios—then guide younger classes.", skills:["Problem design","Facilitation"] },
+  { id:"pr5", title:"Assistive Tech: Switch Interface", theme:"Entrepreneurship", band:"9-12", blurb:"Build a low‑cost switch interface for accessible computer input.", skills:["Electronics","UX","Prototyping"] },
+  { id:"pr6", title:"School Garden Hydroponics", theme:"Community & Service", band:"6-8", blurb:"Grow herbs in a small hydroponic rig; run a tasting day for families.", skills:["Biology","Iteration","Data"] },
+  { id:"pr7", title:"AI Literacy Buddies", theme:"Media & Communication", band:"9-12", blurb:"Create short explainers and a “do/don’t” AI usage guide for middle school.", skills:["Instructional design","Ethics","Comms"] },
+  { id:"pr8", title:"Book‑to‑Film Festival", theme:"Arts & Culture", band:"3-5", blurb:"Adapt chapters into 2‑minute films; storyboards, voice‑over, credits.", skills:["Storytelling","Editing"] }
+];
+
+/* ========= Utils ========= */
+const $  = (sel) => document.querySelector(selMonica, I’m really sorry—that last paste included **placeholders instead of real HTML tags**, so your CSS/JS didn’t load and the nav anchors were malformed. That’s why the page looked unstyled (Times New Roman, everything stacked) and the menu showed `#joinJoin` as plain text.
+
+Below is a **clean, working 3‑file setup** that:
+
+- ✅ Keeps your professional look (brand palette + logo + tagline)
+- ✅ Loads `style.css` and `app.js` correctly
+- ✅ Restores working tabs (Join / Log in / Lessons / Peers / Projects / Dashboard)
+- ✅ Is fully responsive (mobile/tablet/desktop)
+- ✅ Includes the **Mood Board** and the **Ask Minerva** helper (optional to keep)
+
+> **What to do**: Replace your three files exactly with the versions below.  
+> Make sure `logo.png` sits next to `index.html`.
+
+---
+
+## 1) `index.html`  ✅ **Use real tags for CSS/JS and anchors**
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,16 +58,16 @@
   <title>Minerva School — Where curiosity finds its community</title>
   <meta name="theme-color" content="#7B3FE4" />
   <link rel="stylesheet" href="style.css" />
-  <!-- Defer ensures DOM exists when app.js runs -->
-  <script src="app.js" defer></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
   <header>
     <nav class="nav" aria-label="Primary">
       <!-- BRAND -->
       <div class="brand">
-        <!-- Put logo.png next to index.html -->
-        <img src="logo.png" alt="The Minerva School logo" class="logo" onerror="this.classList.add('hidden');document.querySelector('.logo-fallback').classList.remove('hidden')">
+        <!-- Your real image logo. Fallback block shows if image missing -->
+        <img src="logo.png" alt="Minerva School logo" class="logo"
+             onerror="this.classList.add('hidden');document.querySelector('.logo-fallback')?.classList.remove('hidden');" />
         <div class="logo-fallback hidden" aria-hidden="true"></div>
 
         <div class="title">
@@ -66,7 +118,7 @@
                 <select id="role" name="role" required>
                   <option> Learner </option>
                   <option> Teacher </option>
-                  <option> Mentor </ </option>
+                  <option> Mentor </option>
                   <option> Parent </option>
                   <option> Admin </option>
                 </select>
@@ -156,7 +208,6 @@
             </div>
           </div>
         </div>
-
         <div class="card pad0">
           <div class="table-wrap">
             <table class="table" aria-describedby="lessonsHelp">
@@ -299,13 +350,9 @@
         <h3>How do you feel today?</h3>
         <form method="dialog"><button class="btn">Close</button></form>
       </div>
-      <div class="mood-grid" id="moodChoices">
-        <!-- Filled by JS -->
-      </div>
+      <div class="mood-grid" id="moodChoices"></div>
       <h3 style="margin-top:12px">How do you want to learn today?</h3>
-      <div class="chip-row" id="modeChoices">
-        <!-- Filled by JS -->
-      </div>
+      <div class="chip-row" id="modeChoices"></div>
       <div class="modal-actions">
         <button class="btn" id="skipMood">Skip</button>
         <button class="btn primary" id="saveMood">Save & Start</button>
