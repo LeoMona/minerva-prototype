@@ -1,4 +1,4 @@
-/* ========= Data (mock) ========= */
+/* ========= Data ========= */
 const GRADES = ["K","1","2","3","4","5","6","7","8","9","10","11","12"];
 
 const LESSONS = [
@@ -27,63 +27,31 @@ const PROJECTS = [
   { id:"pr4", title:"Math Trails Around Campus", theme:"STEM", band:"3-5", blurb:"Design outdoor math tasks—area, angles, ratios—then guide younger classes.", skills:["Problem design","Facilitation"] },
   { id:"pr5", title:"Assistive Tech: Switch Interface", theme:"Entrepreneurship", band:"9-12", blurb:"Build a low‑cost switch interface for accessible computer input.", skills:["Electronics","UX","Prototyping"] },
   { id:"pr6", title:"School Garden Hydroponics", theme:"Community & Service", band:"6-8", blurb:"Grow herbs in a small hydroponic rig; run a tasting day for families.", skills:["Biology","Iteration","Data"] },
-  { id:"pr7", title:"AI Literacy Buddies", theme:"Media & Communication", band:"9-12", blurb:"Create short explainers and a “do/don’t” AI usage guide for middle school.", skills:["Instructional design","Ethics","Comms"] },
+  { id:"pr7", title:"AI Literacy Buddies", theme:"Media & Communication", band:"9-12", blurb:"Create short explainers and an AI usage guide for middle school.", skills:["Instructional design","Ethics","Comms"] },
   { id:"pr8", title:"Book‑to‑Film Festival", theme:"Arts & Culture", band:"3-5", blurb:"Adapt chapters into 2‑minute films; storyboards, voice‑over, credits.", skills:["Storytelling","Editing"] }
 ];
 
 /* ========= Utilities ========= */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => [...document.querySelectorAll(sel)];
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 const toast = (msg)=>{ const t = $('#toast'); if(!t) return; t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200); };
 const save = (k,v)=>localStorage.setItem(k, JSON.stringify(v));
 const load = (k, d=null)=>JSON.parse(localStorage.getItem(k) || (d!==null?JSON.stringify(d):'null'));
-const todayKey = ()=> new Date().toISOString().slice(0,10); // YYYY-MM-DD
 
 function currentUser(){ return load('minerva_current_user'); }
 function users(){ return load('minerva_users', []); }
 
-/* ========= Theme toggle ========= */
-document.addEventListener('DOMContentLoaded', () => {
-  const themeBtn = $('#themeBtn');
-  themeBtn?.addEventListener('click', ()=>{
-    const html = document.documentElement;
-    html.classList.toggle('force-dark');
-    if(html.classList.contains('force-dark')){
-      html.style.colorScheme = 'dark';
-      html.style.setProperty('--surface', '#0d0b13');
-      html.style.setProperty('--card', '#151221DD');
-      html.style.setProperty('--ink', '#e5e7eb');
-      html.style.setProperty('--muted', '#94a3b8');
-      html.style.setProperty('--ring', '#3b2b66');
-    }else{
-      html.style.colorScheme = 'light';
-      html.style.removeProperty('--surface');
-      html.style.removeProperty('--card');
-      html.style.removeProperty('--ink');
-      html.style.removeProperty('--muted');
-      html.style.removeProperty('--ring');
-    }
-  });
-});
-
 /* ========= Routing ========= */
-const routes = () => $$("[data-route]").map(s=>s.id);
-
 function go(hash){
   const target = (hash || location.hash).replace('#','') || 'join';
   $$("nav a[data-link]").forEach(a=>a.classList.toggle('active', a.getAttribute('href') === '#'+target));
-  routes().forEach(id => $('#'+id).classList.toggle('hidden', id!==target));
+  $$("[data-route]").forEach(s => s.classList.toggle('hidden', s.id !== target));
   if(target==='dashboard') refreshDashboard();
   if(target==='lessons') renderLessons();
   if(target==='peers') renderPeers();
   if(target==='projects') renderProjects();
   $('#logoutBtn')?.classList.toggle('hidden', !currentUser());
-
-  // Prompt Mood Board after successful login (on dashboard)
-  if(target==='dashboard') maybeShowMood();
 }
-
-window.addEventListener('hashchange', ()=>go(location.hash));
 
 /* ========= Auth ========= */
 $('#joinForm')?.addEventListener('submit', (e)=>{
@@ -100,8 +68,6 @@ $('#joinForm')?.addEventListener('submit', (e)=>{
   if(all.some(x=>x.email===u.email)) return toast('This email is already registered.');
   all.push(u); save('minerva_users', all); save('minerva_current_user', {id:u.id, name:u.firstName});
   toast('Welcome '+u.firstName+'! Account created.');
-  // show mood board after creating account
-  save('minerva_last_login', Date.now());
   location.hash = '#dashboard';
 });
 
@@ -112,7 +78,6 @@ $('#loginForm')?.addEventListener('submit', (e)=>{
   const u = users().find(x=>x.email===email && x.pw===pw);
   if(!u) return toast('Invalid credentials');
   save('minerva_current_user', {id:u.id, name:u.firstName});
-  save('minerva_last_login', Date.now());
   toast('Signed in');
   location.hash = '#dashboard';
 });
@@ -133,7 +98,7 @@ function initGrades(){
     const opt = document.createElement('option');
     opt.value = i; opt.textContent = g==='K'? 'K': g; sel.appendChild(opt);
   });
-  sel.value = 6; // default Grade 6
+  sel.value = 6;
   sel.addEventListener('change', renderLessons);
   $$('.subFilter').forEach(cb=>cb.addEventListener('change', renderLessons));
 }
@@ -293,121 +258,14 @@ function refreshDashboard(){
   $('#feedback').innerHTML = fb.map(f=>`<div class='card' style='padding:10px; margin:8px 0'><strong>${f.from}</strong><div>${f.text}</div></div>`).join('');
 }
 
-$('#addReflection')?.addEventListener('click', ()=>{
-  const text = $('#reflectInput').value.trim(); if(!text) return;
-  const arr = load('reflections', []); arr.unshift({t:Date.now(), text}); save('reflections', arr);
-  $('#reflectInput').value=''; refreshDashboard(); toast('Reflection added');
-});
-$('#clearReflections')?.addEventListener('click', ()=>{ save('reflections', []); refreshDashboard(); toast('Reflections cleared'); });
-
-/* ========= Mood Board ========= */
-const MOODS = [
-  {id:'happy', label:'Happy', emoji:'😄'},
-  {id:'curious', label:'Curious', emoji:'🤔'},
-  {id:'stressed', label:'Stressed', emoji:'😵‍💫'},
-  {id:'tired', label:'Tired', emoji:'🥱'},
-  {id:'excited', label:'Excited', emoji:'🤩'},
-];
-
-const MODES = [
-  {id:'quick', label:'Quick practice'},
-  {id:'deep', label:'Deep dive'},
-  {id:'collab', label:'Collaborative'},
-  {id:'create', label:'Create a project'},
-];
-
-let selectedMood = null;
-let selectedMode = null;
-
-function buildMoodBoard(){
-  const moodWrap = $('#moodChoices');
-  const modeWrap = $('#modeChoices');
-  if(!moodWrap || !modeWrap) return;
-
-  moodWrap.innerHTML = MOODS.map(m=>`<button type="button" class="mood-card" data-mood="${m.id}"><div class="emoji">${m.emoji}</div><div>${m.label}</div></button>`).join('');
-  modeWrap.innerHTML = MODES.map(m=>`<label class="pill"><input type="radio" name="learnMode" value="${m.id}"> ${m.label}</label>`).join('');
-
-  moodWrap.querySelectorAll('.mood-card').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      moodWrap.querySelectorAll('.mood-card').forEach(x=>x.classList.remove('selected'));
-      b.classList.add('selected');
-      selectedMood = b.dataset.mood;
-    });
-  });
-  modeWrap.querySelectorAll('input[name="learnMode"]').forEach(r=>{
-    r.addEventListener('change', ()=> selectedMode = r.value);
-  });
-
-  $('#skipMood')?.addEventListener('click', ()=> $('#moodModal').close());
-  $('#saveMood')?.addEventListener('click', ()=>{
-    const u = currentUser(); if(!u){ $('#moodModal').close(); return; }
-    const k = `mood_${u.id}`;
-    const existing = load(k, {});
-    existing[todayKey()] = { mood:selectedMood||'unspecified', mode:selectedMode||'unspecified', t:Date.now() };
-    save(k, existing);
-    toast('Saved. Tailoring suggestions…');
-    // simple nudge based on mode
-    if(selectedMode==='quick') nudgeUpcoming('Quick practice: Narrative Writing');
-    if(selectedMode==='deep') nudgeUpcoming('Deep dive: Metacognition 101');
-    if(selectedMode==='collab') nudgeUpcoming('Collaborative: Community Project');
-    if(selectedMode==='create') nudgeUpcoming('Start: Book‑to‑Film Festival');
-    refreshDashboard();
-    $('#moodModal').close();
-  });
-}
-
-function nudgeUpcoming(title){
-  const up = load('minerva_upcoming', []); if(!up.includes(title)) up.push(title); save('minerva_upcoming', up);
-}
-
-function maybeShowMood(){
-  const u = currentUser(); if(!u) return;
-  const k = `mood_${u.id}`;
-  const moods = load(k, {});
-  if(!moods[todayKey()]){
-    buildMoodBoard();
-    $('#moodModal').showModal();
-  }
-}
-
-/* ========= Assistant (floating chatbot) ========= */
-const assistant = {
-  open(){
-    $('#assistant').classList.remove('hidden');
-    this.push('assistant', 'Hi! I can help you start a lesson, pin a project, or open pages. Try “open projects” or “start a math lesson”.');
-  },
-  close(){ $('#assistant').classList.add('hidden'); },
-  push(who, text){
-    const m = document.createElement('div');
-    m.className = 'assistant-bubble' + (who==='me' ? ' me':'');
-    m.textContent = text;
-    $('#assistantMessages').appendChild(m);
-    $('#assistantMessages').scrollTop = $('#assistantMessages').scrollHeight;
-  },
-  handle(input){
-    const t = input.trim(); if(!t) return;
-    this.push('me', t);
-
-    // very simple intent routing
-    const tt = t.toLowerCase();
-
-    if(tt.includes('open') && tt.includes('project')){ location.hash = '#projects'; this.push('assistant','Opening Projects. Filter by theme or grade.'); return; }
-    if(tt.includes('open') && tt.includes('lesson')){ location.hash = '#lessons'; this.push('assistant','Opening Lessons. Try Grade 6 to start.'); return; }
-    if(tt.includes('dashboard')){ location.hash = '#dashboard'; this.push('assistant','Jumping to Dashboard.'); return; }
-    if(tt.includes('mood')){ maybeShowMood(); this.push('assistant','Here is the mood board. Save your mood and learning style to personalize suggestions.'); return; }
-    if(tt.includes('start') && tt.includes('math')){ openLesson('l4'); this.push('assistant','Launching “Fractions with Minecraft”.'); return; }
-    if(tt.includes('help')){ this.push('assistant','You can say: “open projects”, “open lessons”, “show mood”, “dashboard”, or “start math”.'); return; }
-
-    this.push('assistant',"Got it. I can navigate (projects/lessons/dashboard), show the mood board, or start a suggested lesson. Try: “open projects”.");
-  }
-};
-
+/* ========= Init on DOM Ready ========= */
 document.addEventListener('DOMContentLoaded', ()=>{
-  // Router init
+  // Router + pages
   initGrades();
   go(location.hash || '#join');
+  window.addEventListener('hashchange', ()=>go(location.hash));
 
-  // Mobile menu behavior
+  // Mobile menu
   const navToggle = document.querySelector('.nav-toggle');
   const navMenu = document.querySelector('#navMenu');
   if (navToggle && navMenu) {
@@ -415,7 +273,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const open = navMenu.classList.toggle('show');
       navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-    // Close on link click
     navMenu.querySelectorAll('a[data-link]').forEach(a =>
       a.addEventListener('click', () => {
         navMenu.classList.remove('show');
@@ -437,19 +294,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   });
 
-  // iOS zoom fix
+  // iOS text-zoom avoidance
   document.querySelectorAll('input, select, textarea').forEach(el => el.style.fontSize = '16px');
 
-  // Assistant hookups
-  $('#helpFab')?.addEventListener('click', ()=>assistant.open());
-  $('#assistantClose')?.addEventListener('click', ()=>assistant.close());
-  $('#assistantSend')?.addEventListener('click', ()=>{
-    const inp = $('#assistantInput');
-    const val = inp.value;
-    inp.value = '';
-    assistant.handle(val);
-  });
-  $('#assistantInput')?.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter'){ e.preventDefault(); $('#assistantSend').click(); }
+  // Theme toggle
+  const themeBtn = $('#themeBtn');
+  themeBtn?.addEventListener('click', ()=>{
+    const html = document.documentElement;
+    html.classList.toggle('force-dark');
+    if(html.classList.contains('force-dark')){
+      html.style.colorScheme = 'dark';
+      html.style.setProperty('--surface', '#0d0b13');
+      html.style.setProperty('--card', '#151221DD');
+      html.style.setProperty('--ink', '#e5e7eb');
+      html.style.setProperty('--muted', '#94a3b8');
+      html.style.setProperty('--ring', '#3b2b66');
+    }else{
+      html.style.colorScheme = 'light';
+      html.style.removeProperty('--surface');
+      html.style.removeProperty('--card');
+      html.style.removeProperty('--ink');
+      html.style.removeProperty('--muted');
+      html.style.removeProperty('--ring');
+    }
   });
 });
