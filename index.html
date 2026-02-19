@@ -4,18 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Minerva School — Where curiosity finds its community</title>
-
-  <!-- Styles -->
+  <link rel="preload" href="assets/logo.png" as="image">
   <link rel="stylesheet" href="css/styles.css" />
-
-  <!-- Data first, then app logic. Both loaded with defer so DOM is ready. -->
+  <!-- Always defer scripts so DOM is ready -->
   <script defer src="js/data.js"></script>
   <script defer src="js/app.js"></script>
 </head>
 <body>
   <header>
-    <nav class="nav" aria-label="Primary">
-      <a class="brand" href="#join" data-link aria-label="Home">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="#join" data-link aria-label="Minerva home">
         <img class="logo" src="assets/logo.png" alt="Minerva School logo" />
         <div class="brand-text">
           <strong>Minerva School</strong>
@@ -24,16 +22,16 @@
         <span class="tag">Prototype</span>
       </a>
 
-      <!-- Clean, valid nav links (fixes the #joinJoin text bug) -->
-      <a href="#join" data-link>Join</a>
-      <a href="#login" data-link>Log in</a>
-      <a href="#lessons" data-link>Lessons</a>
-      <a href="#peers" data-link>Peers</a>
-      <a href="#projects" data-link>Projects</a>
-      <a href="#dashboard" data-link>Dashboard</a>
+      <!-- CORRECT NAV LINKS (no stray #joinJoin) -->
+      <a href="#join" data-link id="navJoin">Join</a>
+      <a href="#login" data-link id="navLogin">Log in</a>
+      <a href="#lessons" data-link id="navLessons">Lessons</a>
+      <a href="#peers" data-link id="navPeers">Peers</a>
+      <a href="#projects" data-link id="navProjects">Projects</a>
+      <a href="#dashboard" data-link id="navDashboard">Dashboard</a>
 
       <span class="spacer"></span>
-      <button id="resetBtn" class="btn ghost" title="Clear app data & reload">Reset</button>
+      <button id="resetBtn" class="btn ghost" title="Clear local data (for testing)">Reset</button>
       <button id="logoutBtn" class="btn ghost hidden">Log out</button>
     </nav>
   </header>
@@ -45,7 +43,7 @@
         <div class="card">
           <h1>Join Minerva</h1>
           <p class="muted">Where curiosity finds its community.</p>
-          <form id="joinForm" autocomplete="on">
+          <form id="joinForm" autocomplete="on" novalidate>
             <div class="fields two">
               <div>
                 <label for="firstName">First name</label>
@@ -56,6 +54,7 @@
                 <input id="lastName" name="lastName" required placeholder="e.g., Kumar" />
               </div>
             </div>
+
             <div class="fields">
               <div>
                 <label for="role">Role</label>
@@ -67,15 +66,18 @@
                   <option>Admin</option>
                 </select>
               </div>
+
               <div>
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required placeholder="name@example.com" />
               </div>
+
               <div>
                 <label for="pw">Password</label>
                 <input type="password" id="pw" name="pw" minlength="6" required placeholder="Minimum 6 characters" />
               </div>
             </div>
+
             <div class="actions">
               <button class="btn primary" type="submit">Create account</button>
               <a class="btn" href="#login" data-link>Already have an account? Log in</a>
@@ -110,10 +112,8 @@
             <input id="loginEmail" type="email" required placeholder="name@example.com" />
             <label for="loginPw">Password</label>
             <input id="loginPw" type="password" required />
-            <div class="split">
-              <label class="inline">
-                <input type="checkbox" id="showPw" /> Show password
-              </label>
+            <div class="between">
+              <label class="inline"><input type="checkbox" id="showPw" /> Show password</label>
               <button type="button" class="btn ghost" id="forgotBtn">Forgot password?</button>
             </div>
             <div class="actions">
@@ -122,7 +122,6 @@
             </div>
           </form>
         </div>
-
         <div class="card">
           <h2>New to Minerva?</h2>
           <p>Build your learning passport and join purpose‑driven projects.</p>
@@ -135,163 +134,5 @@
     <section id="lessons" class="abstract-bg hidden" data-route>
       <div class="card">
         <h1>Lessons</h1>
-        <div class="fields two top-gap">
+        <div class="fields two gutter">
           <div>
-            <label for="gradeSelect">Grade</label>
-            <select id="gradeSelect"></select>
-          </div>
-          <div>
-            <label>Subjects</label>
-            <div class="chips">
-              <label class="pill"><input type="checkbox" class="subFilter" value="Math" checked> Math</label>
-              <label class="pill"><input type="checkbox" class="subFilter" value="Science" checked> Science</label>
-              <label class="pill"><input type="checkbox" class="subFilter" value="English" checked> English</label>
-              <label class="pill"><input type="checkbox" class="subFilter" value="Social Studies" checked> Social Studies</label>
-              <label class="pill"><input type="checkbox" class="subFilter" value="Computer Science" checked> Computer Science</label>
-              <label class="pill"><input type="checkbox" class="subFilter" value="Arts" checked> Arts</label>
-              <label class="pill"><input type="checkbox" class="subFilter" value="PE" checked> PE</label>
-              <label class="pill"><input type="checkbox" class="subFilter" value="Life Skills" checked> Life Skills</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="card table-wrap">
-          <table class="table" aria-describedby="lessonsHelp">
-            <thead>
-              <tr>
-                <th>Lesson</th><th>Subject</th><th>Mode</th><th>Grade band</th><th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="lessonsBody"></tbody>
-          </table>
-        </div>
-        <small id="lessonsHelp" class="muted">Tip: filter by Grade and Subjects. Click <span class="kbd">Open</span> to preview.</small>
-      </div>
-    </section>
-
-    <!-- PEERS -->
-    <section id="peers" class="abstract-bg hidden" data-route>
-      <div class="card">
-        <h1>Peers</h1>
-        <p class="muted">Find classmates and mentors for collaborative learning.</p>
-        <div class="fields two">
-          <div>
-            <label>Interests</label>
-            <div class="chips">
-              <label class="pill"><input type="checkbox" class="interest" value="Climate"> Climate</label>
-              <label class="pill"><input type="checkbox" class="interest" value="Robotics"> Robotics</label>
-              <label class="pill"><input type="checkbox" class="interest" value="Art"> Art</label>
-              <label class="pill"><input type="checkbox" class="interest" value="Debate"> Debate</label>
-              <label class="pill"><input type="checkbox" class="interest" value="Sports"> Sports</label>
-            </div>
-          </div>
-          <div>
-            <label for="roleFilter">Role</label>
-            <select id="roleFilter">
-              <option value="All">All</option>
-              <option>Learner</option>
-              <option>Teacher</option>
-              <option>Mentor</option>
-            </select>
-          </div>
-        </div>
-        <div class="chat">
-          <div class="list" id="peerList"></div>
-          <div class="panel">
-            <div class="messages" id="chatMessages" aria-live="polite"></div>
-            <div class="composer">
-              <input id="chatInput" placeholder="Write a message to your peer…" />
-              <button class="btn primary" id="sendMsg">Send</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PROJECTS -->
-    <section id="projects" class="abstract-bg hidden" data-route>
-      <div class="card">
-        <h1>Projects</h1>
-        <p class="muted">Showcase of purpose‑driven projects (curated + community).</p>
-        <div class="fields two">
-          <div>
-            <label for="projTheme">Theme</label>
-            <select id="projTheme">
-              <option value="All">All</option>
-              <option value="Health">Health</option>
-              <option value="Education">Education</option>
-              <option value="Sustainability">Sustainability</option>
-              <option value="Civic">Civic & Community</option>
-              <option value="Technology">Technology</option>
-              <option value="Arts">Arts & Culture</option>
-            </select>
-          </div>
-          <div>
-            <label for="projGrade">Grade band</label>
-            <select id="projGrade">
-              <option value="All">All</option>
-              <option value="K-2">K–2</option>
-              <option value="3-5">3–5</option>
-              <option value="6-8">6–8</option>
-              <option value="9-12">9–12</option>
-            </select>
-          </div>
-        </div>
-        <div class="grid" id="projectGrid"></div>
-      </div>
-    </section>
-
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="abstract-bg hidden" data-route>
-      <div class="row">
-        <div class="card">
-          <h1>Dashboard</h1>
-          <p class="muted">Progress, reflections, and mentor feedback</p>
-          <div class="fields two">
-            <div>
-              <h3>Learning progress</h3>
-              <div id="progressList" class="stack"></div>
-            </div>
-            <div>
-              <h3>Upcoming</h3>
-              <ul id="upcomingList" class="stack"></ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Reflections</h2>
-          <div id="reflections"></div>
-          <div class="fields">
-            <textarea id="reflectInput" rows="3" placeholder="What did you learn today? What will you try next time?"></textarea>
-            <div class="right">
-              <button class="btn" id="clearReflections">Clear</button>
-              <button class="btn primary" id="addReflection">Add entry</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Mentor feedback</h2>
-          <div id="feedback"></div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <div class="footer">© 2026 Minerva School · Prototype for research & co‑design.</div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <!-- Modal -->
-  <dialog id="modal" class="modal">
-    <div class="card no-border">
-      <div class="modal-head">
-        <h3 id="modalTitle">Preview</h3>
-        <form method="dialog"><button class="btn">Close</button></form>
-      </div>
-      <div id="modalBody"></div>
-      <div class="right" id="modalActions"></div>
-    </div>
-  </dialog>
-</body>
-</html>
