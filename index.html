@@ -5,18 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Minerva School — Where curiosity finds its community</title>
   <meta name="theme-color" content="#7B3FE4" />
-  <!-- ✅ Correct stylesheet and script references -->
-  <link rel="stylesheet" href="style.css" />
-  <script defer src="app.js"></script>
+  <link rel="stylesheet" href="style.css?v=3">
+  <script defer src="app.js?v=3"></script>
 </head>
 <body>
   <header>
     <nav class="nav" aria-label="Primary">
       <!-- BRAND -->
       <div class="brand">
-        <img class="logo" src="logo.png" alt="The Minerva School lotus logo" />
-        <div class="logo-fallback hidden" aria-hidden="true"></div>
-
+        <!-- Put logo.png next to index.html -->
+        <img class="logo" src="logo.png" alt="Minerva School logo" onerror="this.style.display='none';document.getElementById('logoFallback').classList.remove('hidden')">
+        <div id="logoFallback" class="logo-fallback hidden" aria-hidden="true"></div>
         <div class="title">
           <div class="name">Minerva School</div>
           <div class="tagline">Where curiosity finds its community</div>
@@ -27,7 +26,7 @@
       <!-- Mobile hamburger -->
       <button class="btn ghost nav-toggle" aria-expanded="false" aria-controls="navMenu" aria-label="Toggle menu">☰</button>
 
-      <!-- ✅ Proper, working links (no stray # text) -->
+      <!-- Proper, working SPA links -->
       <div id="navMenu" class="nav-menu">
         <a href="#join" data-link>Join</a>
         <a href="#login" data-link>Log in</a>
@@ -35,8 +34,8 @@
         <a href="#peers" data-link>Peers</a>
         <a href="#projects" data-link>Projects</a>
         <a href="#dashboard" data-link>Dashboard</a>
-        <button id="logoutBtn" class="btn ghost hidden" type="button">Log out</button>
-        <button class="btn switch" id="themeBtn" type="button" title="Toggle theme">Theme</button>
+        <button id="logoutBtn" class="btn ghost hidden">Log out</button>
+        <button class="btn switch" id="themeBtn" title="Toggle theme">Theme</button>
       </div>
     </nav>
   </header>
@@ -279,48 +278,16 @@
   <div class="footer">© 2026 Minerva School · Prototype for research &amp; co‑design.</div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <!-- Reusable Preview Modal -->
+  <!-- Reusable modal -->
   <dialog id="modal">
     <div class="card no-border">
       <div class="modal-head">
         <h3 id="modalTitle">Preview</h3>
-        <form method="dialog"><button class="btn" type="submit">Close</button></form>
+        <form method="dialog"><button class="btn">Close</button></form>
       </div>
       <div id="modalBody"></div>
       <div class="modal-actions" id="modalActions"></div>
     </div>
   </dialog>
-
-  <!-- Mood Board (shows on login if not set today) -->
-  <dialog id="moodModal">
-    <div class="card no-border">
-      <div class="modal-head">
-        <h3>How do you feel today?</h3>
-        <form method="dialog"><button class="btn" type="submit">Close</button></form>
-      </div>
-      <div class="mood-grid" id="moodChoices"></div>
-      <h3 style="margin-top:12px">How do you want to learn today?</h3>
-      <div class="chip-row" id="modeChoices"></div>
-      <div class="modal-actions">
-        <button class="btn" id="skipMood" type="button">Skip</button>
-        <button class="btn primary" id="saveMood" type="button">Save & Start</button>
-      </div>
-    </div>
-  </dialog>
-
-  <!-- Floating “Ask Minerva” helper -->
-  <button id="helpFab" class="fab" aria-label="Open Ask Minerva" type="button">💬</button>
-  <div id="assistant" class="assistant hidden" aria-live="polite">
-    <div class="assistant-head">
-      <strong>Ask Minerva</strong>
-      <button id="assistantClose" class="btn ghost" aria-label="Close" type="button">✕</button>
-    </div>
-    <div class="assistant-messages" id="assistantMessages"></div>
-    <div class="assistant-composer">
-      <input id="assistantInput" placeholder="Ask for help — e.g., 'open projects' or 'start a math lesson'"/>
-      <button id="assistantSend" class="btn primary" type="button">Send</button>
-    </div>
-  </div>
 </body>
 </html>
-``
