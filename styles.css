@@ -1,4 +1,4 @@
-/* ===== BRAND PALETTE (tuned to lotus logo) ===== */
+/* ===== BRAND PALETTE ===== */
 :root{
   --violet-25:#FBF7FF;
   --violet-50:#F7F2FF;
@@ -59,15 +59,15 @@ header.scrolled{ box-shadow:0 6px 20px rgba(0,0,0,.08); }
 .nav{ max-width:1120px; margin:auto; padding:10px 16px; display:flex; align-items:center; gap:12px; }
 .brand{ display:flex; align-items:center; gap:12px; min-width:0; }
 .brand img.logo{ height:30px; width:auto; display:block; object-fit:contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
-.brand .logo-fallback{ width:28px; height:28px; border-radius:8px;
+.logo-fallback{ width:28px; height:28px; border-radius:8px;
   background:radial-gradient(120px 80px at -10% 50%, var(--violet-300), transparent 60%),
              radial-gradient(120px 80px at 110% 50%, #A78BFA, transparent 60%),
              linear-gradient(135deg, #F3E8FF, #EDE9FE);
   border:1px solid var(--ring); box-shadow:var(--shadow);
 }
-.brand .title{ display:flex; flex-direction:column; }
-.brand .name{ font-weight:800; letter-spacing:.2px; white-space:nowrap; }
-.brand .tagline{ font-size:12px; color:var(--muted); margin-top:-2px; white-space:nowrap; }
+.title{ display:flex; flex-direction:column; }
+.name{ font-weight:800; letter-spacing:.2px; white-space:nowrap; }
+.tagline{ font-size:12px; color:var(--muted); margin-top:-2px; white-space:nowrap; }
 .tag{ font-size:12px; padding:2px 8px; border-radius:999px; background:#eef2ff; color:#4338ca }
 
 /* Buttons & links */
@@ -75,9 +75,8 @@ header.scrolled{ box-shadow:0 6px 20px rgba(0,0,0,.08); }
 .btn.primary{ background:var(--gradient); color:#fff; border-color:transparent; }
 .btn.ghost{ background:transparent; }
 .btn.switch{ font-size:13px; padding:8px 10px; }
-a{ color:inherit; }
+a{ color:inherit; text-decoration:none; }
 
-/* Animated focus ring */
 .btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
   outline:none; box-shadow:0 0 0 3px rgba(123,63,228,.25), 0 0 0 6px rgba(201,75,214,.20);
   transition: box-shadow .18s ease;
@@ -86,11 +85,11 @@ a{ color:inherit; }
 /* Menu */
 .nav-toggle{ display:none; }
 .nav-menu{ display:flex; align-items:center; gap:8px; margin-left:auto; flex-wrap:wrap; }
-.nav-menu a{ color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:10px; }
+.nav-menu a{ color:var(--muted); padding:8px 10px; border-radius:10px; }
 .nav-menu a.active{ background:var(--violet-100); color:var(--violet-600); font-weight:600; }
 
 @media (max-width:900px){
-  .brand .tagline{ display:none; }
+  .tagline{ display:none; }
   .nav{ gap:8px; }
   .nav-toggle{ display:inline-flex; margin-left:auto; }
   .nav-menu{
@@ -175,34 +174,6 @@ dialog::backdrop{ background: rgba(0,0,0,.35); }
   dialog .card{ border-radius:12px; }
 }
 
-/* Mood board */
-.mood-grid{ display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:10px; }
-.mood-card{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px; border:1px solid var(--ring); border-radius:12px; background:var(--surface); cursor:pointer; text-align:center; }
-.mood-card .emoji{ font-size:24px; }
-.mood-card.selected{ outline:3px solid rgba(123,63,228,.3); }
-
-@media (max-width:640px){
-  .mood-grid{ grid-template-columns:repeat(3, minmax(0,1fr)); }
-}
-
-/* Floating assistant */
-.fab{
-  position:fixed; right:16px; bottom:16px; z-index:60; border-radius:999px; width:52px; height:52px;
-  display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--ring); background:var(--gradient); color:#fff; box-shadow:var(--shadow);
-}
-.assistant{
-  position:fixed; right:16px; bottom:78px; width:min(380px, 90vw); border:1px solid var(--ring); background:var(--surface);
-  border-radius:14px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px; padding:10px; z-index:60;
-}
-.assistant.hidden{ display:none; }
-.assistant-head{ display:flex; justify-content:space-between; align-items:center; }
-.assistant-messages{ height:260px; overflow:auto; display:grid; gap:8px; }
-.assistant-bubble{ padding:8px 10px; border-radius:10px; background:#f5f3ff; }
-.assistant-bubble.me{ background:#ede9fe; margin-left:auto; }
-.assistant-composer{ display:flex; gap:8px; }
-.assistant-composer input{ flex:1; }
-.hidden{ display:none!important; }
-
 /* Images do not overflow */
 img, svg, video{ max-width:100%; height:auto; }
 
@@ -210,3 +181,4 @@ img, svg, video{ max-width:100%; height:auto; }
 @supports(padding:max(0px)){
   body{ padding-left:max(0px, env(safe-area-inset-left)); padding-right:max(0px, env(safe-area-inset-right)); }
 }
+.hidden{ display:none!important; }
