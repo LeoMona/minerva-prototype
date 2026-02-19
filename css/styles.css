@@ -1,0 +1,29 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #f9f9f9;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.logo { width: 150px; }
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+.lesson-card, .project-card, .peer-card {
+  padding: 15px;
+  background: #e0e0e0;
+  border-radius: 8px;
+  min-width: 120px;
+  text-align: center;
+}
+button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  cursor: pointer;
+}
