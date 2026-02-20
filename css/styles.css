@@ -147,7 +147,7 @@ input, select, textarea{
 
 .hidden{ display:none !important }
 
-/* Modal (supports both .modal class and dialog element itself) */
+/* Modal */
 .modal{ border:none; border-radius:16px; padding:0; box-shadow:var(--shadow); width:min(720px, 90vw) }
 dialog#modal{ border:none; border-radius:16px; padding:0; box-shadow:var(--shadow); width:min(720px, 90vw) }
 dialog#modal::backdrop{ background:rgba(0,0,0,.25) }
@@ -159,6 +159,8 @@ dialog#modal::backdrop{ background:rgba(0,0,0,.25) }
   border-radius:12px;
   overflow:hidden;
 }
+
+/* Mobile tweaks */
 @media (max-width:600px){
   .chat{ flex-direction:column }
   .chat .list{ flex:unset }
