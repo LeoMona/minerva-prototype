@@ -1,27 +1,18 @@
-/* chatbot.js — Wellness check panel that saves mood + optional note.
-   - Uses #modal if present; falls back to prompt if not.
-   - Persists to localStorage: mood_history = { [userId]: [{t, mood, note?}, ...] }
-   - Works with your existing toast() and refreshDashboard() if available.
-*/
+/* chatbot.js — Wellness check panel that saves mood + optional note */
 (() => {
   'use strict';
 
   // Utilities (safe fallbacks)
   const $  = (sel, root=document) => root.querySelector(sel);
-  const load = (k, d=null) => {
-    try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; }
-  };
+  const load = (k, d=null) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
-  const toast = (msg) => {
+  const toastSafe = (msg) => {
     if (typeof window.toast === 'function') { window.toast(msg); }
     else { console.log('[toast]', msg); }
   };
 
   const MOOD_KEY = 'mood_history';
-
-  function currentUser() {
-    return load('minerva_current_user');
-  }
+  function currentUser() { return load('minerva_current_user'); }
   function pushMood(userId, mood, note='') {
     const all = load(MOOD_KEY, {});
     all[userId] = all[userId] || [];
@@ -29,13 +20,24 @@
     save(MOOD_KEY, all);
   }
 
+  function fallbackPrompt() {
+    const user = currentUser();
+    if (!user) { toastSafe('Please sign in to log your mood'); location.hash='#login'; return; }
+    const mood = prompt('How are you feeling? (1=😞 to 5=😄)', '3');
+    if (!mood) return;
+    const n = Number(mood);
+    if (n>=1 && n<=5) {
+      pushMood(user.id, n, '');
+      toastSafe('Mood saved');
+      if (typeof window.refreshDashboard === 'function') window.refreshDashboard();
+    } else {
+      toastSafe('Please enter a number between 1 and 5');
+    }
+  }
+
   function openWellnessModal() {
     const user = currentUser();
-    if (!user) {
-      toast('Please sign in to log your mood');
-      location.hash = '#login';
-      return;
-    }
+    if (!user) { toastSafe('Please sign in to log your mood'); location.hash = '#login'; return; }
 
     const dlg = $('#modal');
     const title = $('#modalTitle');
@@ -43,17 +45,7 @@
     const actions = $('#modalActions');
 
     if (!dlg || !title || !body || !actions || typeof dlg.showModal !== 'function') {
-      const mood = prompt('How are you feeling? (1=😞 to 5=😄)', '3');
-      if (!mood) return;
-      const n = Number(mood);
-      if (n >= 1 && n <= 5) {
-        pushMood(user.id, n, '');
-        toast('Mood saved');
-        if (typeof window.refreshDashboard === 'function') window.refreshDashboard();
-      } else {
-        toast('Please enter a number between 1 and 5');
-      }
-      return;
+      return fallbackPrompt();
     }
 
     title.textContent = 'Wellness check';
@@ -101,7 +93,7 @@
     saveBtn.addEventListener('click', () => {
       if (!selectedMood) return;
       pushMood(user.id, selectedMood, noteEl.value.trim());
-      toast('Mood saved');
+      toastSafe('Mood saved');
       if (typeof window.refreshDashboard === 'function') window.refreshDashboard();
       dlg.close();
     });
