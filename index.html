@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Minerva School — Where curiosity finds its community</title>
 
-  <!-- Logo preload + CSS -->
-  <link rel="preload" href="assets/logo.png" as="image">
+  <!-- Brand & CSS -->
+  <link rel="preload" href="assets/logo.png" as="image" />
   <link rel="stylesheet" href="css/styles.css" />
 
   <!-- Leaflet (Map) – no API key needed -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- App scripts (order matters) -->
-  <script defer src="js/data.js"></script>
-  <script defer src="js/app.js"></script>
-  <script defer src="js/chatbot.js"></script>
+  <script defer src="js/data.js?v=10"></script>
+  <script defer src="js/app.js?v=10"></script>
+  <script defer src="js/chatbot.js?v=10"></script>
 </head>
 <body>
   <header>
@@ -216,7 +216,16 @@
               <label class="pill"><input type="checkbox" class="interest" value="Health"> Health</label>
               <label class="pill"><input type="checkbox" class="interest" value="CS"> CS</label>
               <label class="pill"><input type="checkbox" class="interest" value="Entrepreneurship"> Entrepreneurship</label>
-              <label class="pill"><input type="checkbox" class="interest" value="Environment"> Environmenter">Role</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Environment"> Environment</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Sports"> Sports</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Math"> Math</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Design"> Design</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Biology"> Biology</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Physics"> Physics</label>
+            </div>
+          </div>
+          <div>
+            <label for="roleFilter">Role</label>
             <select id="roleFilter">
               <option value="All">All</option>
               <option>Learner</option>
