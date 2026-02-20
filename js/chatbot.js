@@ -6,7 +6,7 @@
 (() => {
   'use strict';
 
-  // Utilities (safe fallbacks if app.js isn't loaded yet)
+  // Utilities (safe fallbacks)
   const $  = (sel, root=document) => root.querySelector(sel);
   const load = (k, d=null) => {
     try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; }
@@ -29,7 +29,6 @@
     save(MOOD_KEY, all);
   }
 
-  // Renders the wellness UI into your existing #modal dialog
   function openWellnessModal() {
     const user = currentUser();
     if (!user) {
@@ -44,7 +43,6 @@
     const actions = $('#modalActions');
 
     if (!dlg || !title || !body || !actions || typeof dlg.showModal !== 'function') {
-      // Fallback: simple prompt if modal isn’t available
       const mood = prompt('How are you feeling? (1=😞 to 5=😄)', '3');
       if (!mood) return;
       const n = Number(mood);
@@ -58,7 +56,6 @@
       return;
     }
 
-    // Compose UI
     title.textContent = 'Wellness check';
     body.innerHTML = `
       <p style="margin:6px 0">How are you feeling right now?</p>
@@ -87,7 +84,6 @@
       <button class="btn primary" id="saveMoodBtn" disabled>Save</button>
     `;
 
-    // Local state
     let selectedMood = null;
     const row = $('#moodRow');
     const saveBtn = $('#saveMoodBtn');
@@ -96,7 +92,6 @@
     row.querySelectorAll('button[data-mood]').forEach(btn => {
       btn.addEventListener('click', () => {
         selectedMood = Number(btn.dataset.mood);
-        // Simple selection visual
         row.querySelectorAll('button').forEach(b => b.classList.remove('primary'));
         btn.classList.add('primary');
         saveBtn.disabled = false;
@@ -114,7 +109,6 @@
     dlg.showModal();
   }
 
-  // Wire the header button
   function init() {
     const btn = document.getElementById('chatbotBtn');
     if (btn) btn.addEventListener('click', openWellnessModal);
