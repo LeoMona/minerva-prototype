@@ -4,11 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Minerva School — Where curiosity finds its community</title>
+
+  <!-- Logo preload + CSS -->
   <link rel="preload" href="assets/logo.png" as="image">
   <link rel="stylesheet" href="css/styles.css" />
-  <!-- Always defer scripts so DOM is ready -->
+
+  <!-- Leaflet (Map) – no API key needed -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- App scripts (order matters) -->
   <script defer src="js/data.js"></script>
   <script defer src="js/app.js"></script>
+  <script defer src="js/chatbot.js"></script>
 </head>
 <body>
   <header>
@@ -22,7 +30,7 @@
         <span class="tag">Prototype</span>
       </a>
 
-      <!-- CORRECT NAV LINKS (no stray #joinJoin) -->
+      <!-- Correct nav links -->
       <a href="#join" data-link id="navJoin">Join</a>
       <a href="#login" data-link id="navLogin">Log in</a>
       <a href="#lessons" data-link id="navLessons">Lessons</a>
@@ -31,6 +39,7 @@
       <a href="#dashboard" data-link id="navDashboard">Dashboard</a>
 
       <span class="spacer"></span>
+      <button id="chatbotBtn" class="btn ghost" title="Wellness check">Wellness</button>
       <button id="resetBtn" class="btn ghost" title="Clear local data (for testing)">Reset</button>
       <button id="logoutBtn" class="btn ghost hidden">Log out</button>
     </nav>
@@ -75,6 +84,18 @@
               <div>
                 <label for="pw">Password</label>
                 <input type="password" id="pw" name="pw" minlength="6" required placeholder="Minimum 6 characters" />
+              </div>
+
+              <!-- Mood check (required) -->
+              <div>
+                <label>Mood right now</label>
+                <div id="moodPicker" class="chip-row">
+                  <label class="pill"><input type="radio" name="mood" value="1" required> 😞</label>
+                  <label class="pill"><input type="radio" name="mood" value="2"> 🙁</label>
+                  <label class="pill"><input type="radio" name="mood" value="3"> 😐</label>
+                  <label class="pill"><input type="radio" name="mood" value="4"> 🙂</label>
+                  <label class="pill"><input type="radio" name="mood" value="5"> 😄</label>
+                </div>
               </div>
             </div>
 
@@ -142,8 +163,24 @@
           <div>
             <label>Subjects</label>
             <div class="chip-row" id="subjectFilters">
-              <!-- created by JS using LESSON_SUBJECTS -->
+              <!-- Static subjects to match app.js .subFilter -->
+              <label class="pill"><input type="checkbox" class="subFilter" value="Math" checked> Math</label>
+              <label class="pill"><input type="checkbox" class="subFilter" value="Science" checked> Science</label>
+              <label class="pill"><input type="checkbox" class="subFilter" value="English" checked> English</label>
+              <label class="pill"><input type="checkbox" class="subFilter" value="Social Studies" checked> Social Studies</label>
+              <label class="pill"><input type="checkbox" class="subFilter" value="Computer Science" checked> Computer Science</label>
+              <label class="pill"><input type="checkbox" class="subFilter" value="Arts" checked> Arts</label>
+              <label class="pill"><input type="checkbox" class="subFilter" value="PE" checked> PE</label>
+              <label class="pill"><input type="checkbox" class="subFilter" value="Life Skills" checked> Life Skills</label>
             </div>
+          </div>
+        </div>
+
+        <!-- Skills (auto-populated by app.js) -->
+        <div class="fields">
+          <div>
+            <label>Skills</label>
+            <div id="skillFilters" class="chip-row"></div>
           </div>
         </div>
 
@@ -157,7 +194,7 @@
             <tbody id="lessonsBody"></tbody>
           </table>
         </div>
-        <small id="lessonsHelp" class="muted">Tip: filter by Grade and Subjects. Click <span class="kbd">Open</span> to preview.</small>
+        <small id="lessonsHelp" class="muted">Tip: filter by Grade, Subjects, and Skills. Click <span class="kbd">Open</span> to preview.</small>
       </div>
     </section>
 
@@ -170,10 +207,16 @@
         <div class="fields two">
           <div>
             <label>Interests</label>
-            <div class="chip-row" id="interestFilters"></div>
-          </div>
-          <div>
-            <label for="roleFilter">Role</label>
+            <div class="chip-row" id="interestFilters">
+              <!-- Interests to match app.js .interest -->
+              <label class="pill"><input type="checkbox" class="interest" value="Robotics"> Robotics</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Art"> Art</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Media"> Media</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Civic"> Civic</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Health"> Health</label>
+              <label class="pill"><input type="checkbox" class="interest" value="CS"> CS</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Entrepreneurship"> Entrepreneurship</label>
+              <label class="pill"><input type="checkbox" class="interest" value="Environment"> Environmenter">Role</label>
             <select id="roleFilter">
               <option value="All">All</option>
               <option>Learner</option>
@@ -183,7 +226,14 @@
           </div>
         </div>
 
-        <div class="chat">
+        <!-- World map -->
+        <div class="card" style="margin-top:12px">
+          <h3>Map</h3>
+          <div id="peerMap"></div>
+        </div>
+
+        <!-- Chat -->
+        <div class="chat" style="margin-top:12px">
           <div class="list" id="peerList"></div>
           <div class="panel">
             <div class="messages" id="chatMessages" aria-live="polite"></div>
@@ -204,8 +254,18 @@
 
         <div class="fields two">
           <div>
-            <label for="projTheme">Theme</label>
-            <select id="projTheme"></select>
+            <label for="projSubject">Subject</label>
+            <select id="projSubject">
+              <option value="All">All</option>
+              <option>STEM</option>
+              <option>Arts &amp; Design</option>
+              <option>Civic &amp; Service</option>
+              <option>Entrepreneurship</option>
+              <option>Health &amp; Wellness</option>
+              <option>Environment</option>
+              <option>Media &amp; Communication</option>
+              <option>Technology &amp; Computing</option>
+            </select>
           </div>
           <div>
             <label for="projGrade">Grade band</label>
@@ -219,7 +279,14 @@
           </div>
         </div>
 
-        <div class="grid" id="projectGrid"></div>
+        <div class="grid" id="projectGrid" style="margin-top:12px"></div>
+
+        <!-- Suggestions -->
+        <div class="card" style="margin-top:12px">
+          <h2>Suggestions — Competitions & Internships</h2>
+          <p class="muted" style="margin-top:-6px">Filtered by your subject & grade band.</p>
+          <ul id="suggestionsList" style="margin-top:6px"></ul>
+        </div>
       </div>
     </section>
 
@@ -237,6 +304,9 @@
             <div>
               <h3>Upcoming</h3>
               <ul id="upcomingList"></ul>
+              <div style="margin-top:10px">
+                <button class="btn" id="moodTodayBtn">Log mood today</button>
+              </div>
             </div>
           </div>
         </div>
@@ -277,4 +347,3 @@
   </dialog>
 </body>
 </html>
-``
