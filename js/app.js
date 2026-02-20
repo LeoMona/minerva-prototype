@@ -1,18 +1,17 @@
 /* app.js */
 'use strict';
 
-// ----- Helpers (your style) -----
+// ----- Helpers -----
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 const toast = (msg) => { const t = $('#toast'); if(!t) return; t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); };
 const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 const load = (k, d=null) => JSON.parse(localStorage.getItem(k) || (d!==null?JSON.stringify(d):'null'));
 
-// Keys for reset (if you have a Reset button)
+// LocalStorage keys used by this app (for Reset)
 const APP_KEYS = [
   'minerva_users','minerva_current_user','minerva_progress','minerva_upcoming',
   'reflections','my_projects','chat_p1','chat_p2','chat_p3','chat_p4','chat_p5',
-  // mood
   'mood_history'
 ];
 
@@ -40,10 +39,7 @@ function currentUser(){ return load('minerva_current_user'); }
 function users(){ return load('minerva_users', []); }
 
 // ----- Mood storage (per user) -----
-function moodKey(userId){ return 'mood_history'; } // simple single-key store with user entries
-function getMoodHistory(){
-  return load('mood_history', {}); // { userId: [ {t, mood}, ... ] }
-}
+function getMoodHistory(){ return load('mood_history', {}); }
 function pushMood(userId, mood){
   const all = getMoodHistory();
   all[userId] = all[userId] || [];
@@ -126,7 +122,6 @@ window.addEventListener('DOMContentLoaded', () => {
   // Mood today button
   $('#moodTodayBtn')?.addEventListener('click', () => {
     const uid = currentUser()?.id; if(!uid){ location.hash='#login'; return;}
-    // simple prompt; you can swap for a modal UI later
     const val = prompt('How do you feel today? (1=😞 to 5=😄)', '3');
     if(!val) return;
     const n = Number(val);
@@ -256,7 +251,7 @@ function renderPeers(){
     list.appendChild(card);
   });
 
-  // Filters (rebind once)
+  // Filters (bind)
   $('#roleFilter').onchange = renderPeers;
   $$('.interest').forEach(i => i.onchange = renderPeers);
   list.querySelectorAll('[data-connect]').forEach(btn => btn.addEventListener('click', () => openChat(btn.dataset.connect)));
@@ -266,14 +261,16 @@ function renderPeers(){
   // Map markers
   if(markersLayer){
     markersLayer.clearLayers();
+    const markerObjs = [];
     filtered.forEach(p => {
       if(typeof p.lat === 'number' && typeof p.lng === 'number'){
         const m = L.marker([p.lat, p.lng]).bindPopup(`<strong>${p.name}</strong><br>${p.role}${p.grade? ' · G'+p.grade:''}<br>${p.city}, ${p.country}`);
         markersLayer.addLayer(m);
+        markerObjs.push(L.marker([p.lat, p.lng]));
       }
     });
-    if(filtered.length){
-      const group = L.featureGroup(filtered.filter(p => p.lat && p.lng).map(p => L.marker([p.lat,p.lng])));
+    if(markerObjs.length){
+      const group = L.featureGroup(markerObjs);
       try { map.fitBounds(group.getBounds().pad(0.25)); } catch {}
     }
   }
@@ -285,7 +282,6 @@ function openChat(peerId){
   msgsWrap.innerHTML = (load('chat_'+peerId, [])).map(m => `<div class='bubble ${m.me? 'me':''}'>${m.text}</div>`).join('');
   toast('Chatting with '+(currentPeer?.name || 'peer'));
 }
-
 function sendMessage(){
   if(!currentPeer) return;
   const input = $('#chatInput'); const text = input.value.trim(); if(!text) return;
@@ -338,7 +334,6 @@ function openProject(id){
   if (dlg?.showModal) dlg.showModal(); else dlg?.setAttribute('open','');
   $('#modalActions [data-join]').addEventListener('click', () => joinProject(p.id));
 }
-
 function joinProject(id){
   const my = load('my_projects', []); const p = PROJECTS.find(x=>x.id===id);
   if(!p) return;
@@ -399,7 +394,7 @@ function refreshDashboard(){
       {from:'Mentor Dev', text:'Great systems mapping in your climate module. Next time, push for clearer measurements.'},
       {from:'Ms. Gupta',  text:'Loved your reflection depth. Try a "plan‑do‑review" next week.'}
     ];
-    const moodLine = latest ? [{from:'Wellbeing Bot', text:`Latest mood logged: ${'😞🙁😐🙂😄'[latest.mood-1]} (${latest.mood}/5)`}] : [];
+    const moodLine = latest ? [{from:'Wellbeing Bot', text:`Latest mood logged: ${['😞','🙁','😐','🙂','😄'][latest.mood-1]} (${latest.mood}/5)`}] : [];
     fbWrap.innerHTML = [...moodLine, ...base].map(f => `<div class='card' style='padding:10px; margin:8px 0'><strong>${f.from}</strong><div>${f.text}</div></div>`).join('');
   }
 }
